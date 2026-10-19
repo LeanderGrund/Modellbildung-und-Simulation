@@ -1,0 +1,13 @@
+{
+  "reference_service_date": "2026-10-14",
+  "route_count": 6,
+  "trip_count": 3640,
+  "stop_times_count": 75911,
+  "stop_count_including_parent_stations": 110,
+  "shape_count": 252,
+  "shape_point_count": 124500,
+  "active_trip_count": 492,
+  "calendar_start": "20261013",
+  "calendar_end": "20261212",
+  "source_zip_sha256": "50556690327d579ad92c1e9810ef782e56f4fc75fe23b239c0ae928c401712ad"
+}

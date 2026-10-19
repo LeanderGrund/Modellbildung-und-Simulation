@@ -1,0 +1,28 @@
+﻿segment_sequence,from_station,to_station,length_m,from_distance_m,to_distance_m
+1,Gesundbrunnen,Wedding,1781.211,0.0,1781.211
+2,Wedding,Westhafen,1785.555,1781.211,3566.766
+3,Westhafen,Beusselstraße,1053.241,3566.766,4620.007
+4,Beusselstraße,Jungfernheide,2003.94,4620.007,6623.947
+5,Jungfernheide,Westend,2227.955,6623.947,8851.902
+6,Westend,Messe Nord/ZOB,1241.695,8851.902,10093.597
+7,Messe Nord/ZOB,Westkreuz,798.863,10093.597,10892.46
+8,Westkreuz,Halensee,660.182,10892.46,11552.642
+9,Halensee,Hohenzollerndamm,1076.402,11552.642,12629.044
+10,Hohenzollerndamm,Heidelberger Platz,1200.46,12629.044,13829.504
+11,Heidelberger Platz,Bundesplatz,1289.58,13829.504,15119.084
+12,Bundesplatz,Innsbrucker Platz,890.531,15119.084,16009.615
+13,Innsbrucker Platz,Schöneberg,697.566,16009.615,16707.181
+14,Schöneberg,Südkreuz,1140.326,16707.181,17847.507
+15,Südkreuz,Tempelhof,1530.529,17847.507,19378.036
+16,Tempelhof,Hermannstraße,3364.6,19378.036,22742.636
+17,Hermannstraße,Neukölln,900.081,22742.636,23642.717
+18,Neukölln,Sonnenallee,954.2,23642.717,24596.917
+19,Sonnenallee,Treptower Park,2377.559,24596.917,26974.476
+20,Treptower Park,Ostkreuz,1186.818,26974.476,28161.294
+21,Ostkreuz,Frankfurter Allee,1449.36,28161.294,29610.654
+22,Frankfurter Allee,Storkower Straße,1215.964,29610.654,30826.618
+23,Storkower Straße,Landsberger Allee,975.261,30826.618,31801.879
+24,Landsberger Allee,Greifswalder Straße,1598.309,31801.879,33400.188
+25,Greifswalder Straße,Prenzlauer Allee,1077.604,33400.188,34477.792
+26,Prenzlauer Allee,Schönhauser Allee,901.457,34477.792,35379.249
+27,Schönhauser Allee,Gesundbrunnen,1629.419,35379.249,37008.668

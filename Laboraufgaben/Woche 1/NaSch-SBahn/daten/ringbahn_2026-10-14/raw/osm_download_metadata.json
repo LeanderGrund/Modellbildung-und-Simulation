@@ -1,0 +1,50 @@
+[
+  {
+    "relation_id": 14981,
+    "url": "https://api.openstreetmap.org/api/0.6/relation/14981/full",
+    "resolved_url": "https://api.openstreetmap.org/api/0.6/relation/14981/full",
+    "retrieved_at_utc": "2026-10-14T14:00:48.588083+00:00",
+    "headers": {
+      "Connection": "close",
+      "content-type": "application/xml; charset=utf-8",
+      "content-encoding": "identity",
+      "server": "Apache",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "cache-control": "private, max-age=0, must-revalidate",
+      "Accept-Ranges": "bytes",
+      "Date": "Wed, 14 Oct 2026 14:00:48 GMT",
+      "Via": "1.1 varnish",
+      "X-Served-By": "cache-ber1080030-BER, cache-ber1080023-BER",
+      "X-Cache": "MISS, MISS",
+      "X-Cache-Hits": "0, 0",
+      "X-Timer": "S1791986448.326558,VS0,VE183",
+      "Vary": "Accept-Encoding",
+      "alt-svc": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400",
+      "transfer-encoding": "chunked"
+    }
+  },
+  {
+    "relation_id": 14983,
+    "url": "https://api.openstreetmap.org/api/0.6/relation/14983/full",
+    "resolved_url": "https://api.openstreetmap.org/api/0.6/relation/14983/full",
+    "retrieved_at_utc": "2026-10-14T14:00:49.011490+00:00",
+    "headers": {
+      "Connection": "close",
+      "content-type": "application/xml; charset=utf-8",
+      "content-encoding": "identity",
+      "server": "Apache",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "cache-control": "private, max-age=0, must-revalidate",
+      "Accept-Ranges": "bytes",
+      "Date": "Wed, 14 Oct 2026 14:00:48 GMT",
+      "Via": "1.1 varnish",
+      "X-Served-By": "cache-ber1080021-BER, cache-ber1080021-BER",
+      "X-Cache": "MISS, MISS",
+      "X-Cache-Hits": "0, 0",
+      "X-Timer": "S1791986449.621672,VS0,VE164",
+      "Vary": "Accept-Encoding",
+      "alt-svc": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400",
+      "transfer-encoding": "chunked"
+    }
+  }
+]

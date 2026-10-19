@@ -1,0 +1,21 @@
+{
+  "requested_url": "https://unternehmen.vbb.de/gtfs",
+  "resolved_url": "https://unternehmen.vbb.de/gtfs",
+  "retrieved_at_utc": "2026-10-14T13:55:06.424513+00:00",
+  "headers": {
+    "Date": "Wed, 14 Oct 2026 13:55:06 GMT",
+    "Content-Type": "application/zip",
+    "Content-Length": "66108161",
+    "Connection": "close",
+    "Server": "cloudflare",
+    "content-disposition": "attachment; filename=\"gtfs.zip\"",
+    "Cache-Control": "must-revalidate, post-check=0, pre-check=0",
+    "pragma": "public",
+    "cf-cache-status": "DYNAMIC",
+    "CF-RAY": "a4a7146b4a0ef28f-TXL"
+  },
+  "full_source_zip_sha256": "50556690327d579ad92c1e9810ef782e56f4fc75fe23b239c0ae928c401712ad",
+  "full_source_zip_bytes": 66108161,
+  "full_source_zip_included": false,
+  "included_subset_zip": "vbb_ringbahn_gtfs_subset.zip"
+}

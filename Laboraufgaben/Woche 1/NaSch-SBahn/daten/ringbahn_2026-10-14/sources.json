@@ -1,0 +1,207 @@
+{
+  "created_for": "NaSch-SBahn; separate data snapshot, no integration into existing simulation",
+  "snapshot_date": "2026-10-14",
+  "timezone": "Europe/Berlin",
+  "primary_geometry_source": {
+    "provider": "OpenStreetMap contributors",
+    "license": "ODbL 1.0",
+    "license_url": "https://www.openstreetmap.org/copyright",
+    "downloads": [
+      {
+        "relation_id": 14981,
+        "url": "https://api.openstreetmap.org/api/0.6/relation/14981/full",
+        "resolved_url": "https://api.openstreetmap.org/api/0.6/relation/14981/full",
+        "retrieved_at_utc": "2026-10-14T14:00:48.588083+00:00",
+        "headers": {
+          "Connection": "close",
+          "content-type": "application/xml; charset=utf-8",
+          "content-encoding": "identity",
+          "server": "Apache",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "cache-control": "private, max-age=0, must-revalidate",
+          "Accept-Ranges": "bytes",
+          "Date": "Wed, 14 Oct 2026 14:00:48 GMT",
+          "Via": "1.1 varnish",
+          "X-Served-By": "cache-ber1080030-BER, cache-ber1080023-BER",
+          "X-Cache": "MISS, MISS",
+          "X-Cache-Hits": "0, 0",
+          "X-Timer": "S1791986448.326558,VS0,VE183",
+          "Vary": "Accept-Encoding",
+          "alt-svc": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400",
+          "transfer-encoding": "chunked"
+        }
+      },
+      {
+        "relation_id": 14983,
+        "url": "https://api.openstreetmap.org/api/0.6/relation/14983/full",
+        "resolved_url": "https://api.openstreetmap.org/api/0.6/relation/14983/full",
+        "retrieved_at_utc": "2026-10-14T14:00:49.011490+00:00",
+        "headers": {
+          "Connection": "close",
+          "content-type": "application/xml; charset=utf-8",
+          "content-encoding": "identity",
+          "server": "Apache",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "cache-control": "private, max-age=0, must-revalidate",
+          "Accept-Ranges": "bytes",
+          "Date": "Wed, 14 Oct 2026 14:00:48 GMT",
+          "Via": "1.1 varnish",
+          "X-Served-By": "cache-ber1080021-BER, cache-ber1080021-BER",
+          "X-Cache": "MISS, MISS",
+          "X-Cache-Hits": "0, 0",
+          "X-Timer": "S1791986449.621672,VS0,VE164",
+          "Vary": "Accept-Encoding",
+          "alt-svc": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400",
+          "transfer-encoding": "chunked"
+        }
+      }
+    ]
+  },
+  "schedule_source": {
+    "provider": "Verkehrsverbund Berlin-Brandenburg GmbH (VBB)",
+    "license": "CC BY 4.0",
+    "description_url": "https://unternehmen.vbb.de/digitale-services/datensaetze/",
+    "download": {
+      "requested_url": "https://unternehmen.vbb.de/gtfs",
+      "resolved_url": "https://unternehmen.vbb.de/gtfs",
+      "retrieved_at_utc": "2026-10-14T13:55:06.424513+00:00",
+      "headers": {
+        "Date": "Wed, 14 Oct 2026 13:55:06 GMT",
+        "Content-Type": "application/zip",
+        "Content-Length": "66108161",
+        "Connection": "close",
+        "Server": "cloudflare",
+        "content-disposition": "attachment; filename=\"gtfs.zip\"",
+        "Cache-Control": "must-revalidate, post-check=0, pre-check=0",
+        "pragma": "public",
+        "cf-cache-status": "DYNAMIC",
+        "CF-RAY": "a4a7146b4a0ef28f-TXL"
+      },
+      "full_source_zip_sha256": "50556690327d579ad92c1e9810ef782e56f4fc75fe23b239c0ae928c401712ad",
+      "full_source_zip_bytes": 66108161,
+      "full_source_zip_included": false,
+      "included_subset_zip": "vbb_ringbahn_gtfs_subset.zip"
+    },
+    "subset_filter": {
+      "route_short_name": [
+        "S41",
+        "S42"
+      ],
+      "route_type": "109"
+    },
+    "example_service_date": "2026-10-14",
+    "examples": [
+      {
+        "line": "S41",
+        "trip_id": "308542990",
+        "service_id": "646",
+        "shape_id": "2915",
+        "reference_service_date": "2026-10-14",
+        "first_departure": "8:03:24",
+        "return_arrival": "9:02:42",
+        "departure_to_return_arrival_seconds": 3558,
+        "shape_length_m": 39606.482,
+        "shape_point_count": 887,
+        "interior_dwell_seconds_sum": 870,
+        "interior_dwell_seconds_min": 30,
+        "interior_dwell_seconds_max": 48,
+        "endpoint_dwell_unknown": true,
+        "max_shape_point_offset_m": 6.284,
+        "max_osm_gtfs_station_difference_m": 98.243,
+        "trip_source_row": {
+          "route_id": "10224_109",
+          "service_id": "646",
+          "trip_id": "308542990",
+          "trip_headsign": "Ringbahn S 41",
+          "trip_short_name": "41576",
+          "direction_id": "0",
+          "block_id": "1010",
+          "shape_id": "2915",
+          "wheelchair_accessible": "1",
+          "bikes_allowed": "1"
+        }
+      },
+      {
+        "line": "S42",
+        "trip_id": "308548978",
+        "service_id": "646",
+        "shape_id": "3050",
+        "reference_service_date": "2026-10-14",
+        "first_departure": "8:03:18",
+        "return_arrival": "9:02:36",
+        "departure_to_return_arrival_seconds": 3558,
+        "shape_length_m": 39741.099,
+        "shape_point_count": 946,
+        "interior_dwell_seconds_sum": 888,
+        "interior_dwell_seconds_min": 30,
+        "interior_dwell_seconds_max": 48,
+        "endpoint_dwell_unknown": true,
+        "max_shape_point_offset_m": 9.519,
+        "max_osm_gtfs_station_difference_m": 86.986,
+        "trip_source_row": {
+          "route_id": "10227_109",
+          "service_id": "646",
+          "trip_id": "308548978",
+          "trip_headsign": "Ringbahn S 42",
+          "trip_short_name": "42573",
+          "direction_id": "0",
+          "block_id": "1037",
+          "shape_id": "3050",
+          "wheelchair_accessible": "1",
+          "bikes_allowed": "1"
+        }
+      }
+    ]
+  },
+  "distance_method": "Sum of WGS84 ellipsoidal geodesic distances between consecutive OSM track vertices; GeographicLib 2.1",
+  "selected_geometry_start_station": "Beusselstraße",
+  "quality": [
+    {
+      "line": "S41",
+      "station_count": 27,
+      "osm_length_m": 36971.599,
+      "gtfs_example_shape_length_m": 39606.482,
+      "length_disagreement_percent": 7.127,
+      "max_derived_speed_osm_kmh": 65.509,
+      "max_derived_speed_gtfs_kmh": 109.967,
+      "most_disagreeing_segment": {
+        "segment_sequence": 9,
+        "from_station": "Storkower Straße",
+        "to_station": "Frankfurter Allee",
+        "osm_length_m": 1224.388,
+        "planned_drive_seconds": 90,
+        "derived_osm_segment_average_kmh": 48.976,
+        "gtfs_shape_length_m": 2749.181,
+        "geometry_disagreement_percent": 124.535,
+        "departure_time": "8:21:12",
+        "arrival_time": "8:22:42",
+        "service_date": "2026-10-14",
+        "timing_source_trip_id": "308542990"
+      }
+    },
+    {
+      "line": "S42",
+      "station_count": 27,
+      "osm_length_m": 37008.668,
+      "gtfs_example_shape_length_m": 39741.099,
+      "length_disagreement_percent": 7.383,
+      "max_derived_speed_osm_kmh": 65.121,
+      "max_derived_speed_gtfs_kmh": 103.052,
+      "most_disagreeing_segment": {
+        "segment_sequence": 19,
+        "from_station": "Frankfurter Allee",
+        "to_station": "Storkower Straße",
+        "osm_length_m": 1215.964,
+        "planned_drive_seconds": 96,
+        "derived_osm_segment_average_kmh": 45.599,
+        "gtfs_shape_length_m": 2748.055,
+        "geometry_disagreement_percent": 125.998,
+        "departure_time": "8:43:36",
+        "arrival_time": "8:45:12",
+        "service_date": "2026-10-14",
+        "timing_source_trip_id": "308548978"
+      }
+    }
+  ],
+  "existing_code_modified": false
+}

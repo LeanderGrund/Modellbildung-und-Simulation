@@ -1,0 +1,111 @@
+﻿stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station,wheelchair_boarding,platform_code,zone_id,level_id
+de:11000:900007102,,S+U Gesundbrunnen Bhf (Berlin),,52.548637000000,13.388372000000,1,,0,,5555 S+U Gesundbrunnen Bhf (Berlin),
+de:11000:900009104,,S+U Wedding (Berlin),,52.542732000000,13.366060000000,1,,0,,5555 S+U Wedding (Berlin),
+de:11000:900020201,,S+U Jungfernheide Bhf (Berlin),,52.530452000000,13.300124000000,1,,0,,5555 S+U Jungfernheide Bhf (Berlin),
+de:11000:900024101,,S Charlottenburg Bhf (Berlin),,52.504732000000,13.303862000000,1,,0,,5555 S Charlottenburg Bhf (Berlin),
+de:11000:900024102,,S Westkreuz (Berlin),,52.501152000000,13.283036000000,1,,0,,5555 S Westkreuz (Berlin),
+de:11000:900024106,,S Messe Nord/ZOB (Berlin),,52.506622000000,13.282884000000,1,,0,,5555 S Messe Nord/ZOB (Berlin),
+de:11000:900026207,,S Westend (Berlin),,52.518610000000,13.284237000000,1,,0,,5555 S Westend (Berlin),
+de:11000:900040101,,S Halensee (Berlin),,52.496698000000,13.290151000000,1,,0,,5555 S Halensee (Berlin),
+de:11000:900044101,,S Hohenzollerndamm (Berlin),,52.488337000000,13.300714000000,1,,0,,5555 S Hohenzollerndamm (Berlin),
+de:11000:900044202,,S+U Bundesplatz (Berlin),,52.477667000000,13.328626000000,1,,0,,5555 S+U Bundesplatz (Berlin),
+de:11000:900045102,,S+U Heidelberger Platz (Berlin),,52.480124000000,13.312290000000,1,,0,,5555 S+U Heidelberger Platz (Berlin),
+de:11000:900054104,,S Schöneberg (Berlin),,52.479811000000,13.352848000000,1,,0,,5555 S Schöneberg (Berlin),
+de:11000:900054105,,S+U Innsbrucker Platz (Berlin),,52.478100000000,13.342875000000,1,,0,,5555 S+U Innsbrucker Platz (Berlin),
+de:11000:900058101,,S Südkreuz Bhf (Berlin),,52.475502000000,13.365552000000,1,,0,,5555 S Südkreuz Bhf (Berlin),
+de:11000:900068201,,S+U Tempelhof (Berlin),,52.470574000000,13.385900000000,1,,0,,5555 S+U Tempelhof (Berlin),
+de:11000:900077106,,S Sonnenallee (Berlin),,52.473843000000,13.455986000000,1,,0,,5555 S Sonnenallee (Berlin),
+de:11000:900077155,,S Köllnische Heide (Berlin),,52.469168000000,13.467529000000,1,,0,,5656 S Köllnische Heide (Berlin),
+de:11000:900078201,,S+U Neukölln (Berlin),,52.469282000000,13.443692000000,1,,0,,5555 S+U Neukölln (Berlin),
+de:11000:900079221,,S+U Hermannstr. (Berlin),,52.467181000000,13.431704000000,1,,0,,5555 S+U Hermannstr. (Berlin),
+de:11000:900110001,,S+U Schönhauser Allee (Berlin),,52.549336000000,13.415138000000,1,,0,,5555 S+U Schönhauser Allee (Berlin),
+de:11000:900110002,,S Prenzlauer Allee (Berlin),,52.544802000000,13.427419000000,1,,0,,5555 S Prenzlauer Allee (Berlin),
+de:11000:900110003,,S Greifswalder Str. (Berlin),,52.540724000000,13.438356000000,1,,0,,5555 S Greifswalder Str. (Berlin),
+de:11000:900110004,,S Landsberger Allee (Berlin),,52.528772000000,13.455944000000,1,,0,,5555 S Landsberger Allee (Berlin),
+de:11000:900110012,,S Storkower Str. (Berlin),,52.523868000000,13.464704000000,1,,0,,5555 S Storkower Str. (Berlin),
+de:11000:900120001,,S+U Frankfurter Allee (Berlin),,52.513580000000,13.475848000000,1,,0,,5555 S+U Frankfurter Allee (Berlin),
+de:11000:900120003,,S Ostkreuz Bhf (Berlin),,52.503113000000,13.469221000000,1,,0,,5555 S Ostkreuz Bhf (Berlin),
+de:11000:900186001,,S Grünau (Berlin),,52.412714000000,13.574018000000,1,,0,,5656 S Grünau (Berlin),
+de:11000:900190001,,S Treptower Park (Berlin),,52.493832000000,13.461825000000,1,,0,,5555 S Treptower Park (Berlin),
+de:11000:900191001,,S Baumschulenweg (Berlin),,52.467581000000,13.489505000000,1,,0,,5656 S Baumschulenweg (Berlin),
+de:11000:900191002,,S Plänterwald (Berlin),,52.478722000000,13.474029000000,1,,0,,5656 S Plänterwald (Berlin),
+de:11000:900192001,,S Schöneweide Bhf (Berlin),,52.454611000000,13.510149000000,1,,0,,5656 S Schöneweide Bhf (Berlin),
+de:11000:900193001,,S Johannisthal (Berlin),,52.446695000000,13.524028000000,1,,0,,5656 S Johannisthal (Berlin),
+de:11000:900193002,,S Adlershof (Berlin),,52.435102000000,13.540553000000,1,,0,,5656 S Adlershof (Berlin),
+de:11000:900020202,,S Beusselstr. (Berlin),,52.534314000000,13.328703000000,1,,0,,5555 S Beusselstr. (Berlin),
+de:11000:900001201,,S+U Westhafen (Berlin),,52.536183000000,13.343837000000,1,,0,,5555 S+U Westhafen (Berlin),
+de:11000:900001201:1:50,,S+U Westhafen (Berlin),S-Bahnsteig Gleis 1,52.536218000000,13.344329000000,0,de:11000:900001201,0,1,5555 S+U Westhafen (Berlin),144
+de:11000:900001201:1:51,,S+U Westhafen (Berlin),S-Bahnsteig Gleis 2,52.536318000000,13.344298000000,0,de:11000:900001201,0,2,5555 S+U Westhafen (Berlin),144
+de:11000:900007102:1:51,,S+U Gesundbrunnen Bhf (Berlin),S-Bahnsteig Gleis 2,52.549212000000,13.389895000000,0,de:11000:900007102,0,,5555 S+U Gesundbrunnen Bhf (Berlin),149
+de:11000:900007102:2:52,,S+U Gesundbrunnen Bhf (Berlin),S-Bahnsteig Gleis 3,52.549131000000,13.389907000000,0,de:11000:900007102,0,,5555 S+U Gesundbrunnen Bhf (Berlin),149
+de:11000:900020201:2:52,,S+U Jungfernheide Bhf (Berlin),S-Bahnsteig Gleis 5,52.530363000000,13.299325000000,0,de:11000:900020201,0,5,5555 S+U Jungfernheide Bhf (Berlin),47
+de:11000:900020201:2:53,,S+U Jungfernheide Bhf (Berlin),S-Bahnsteig Gleis 6,52.530446000000,13.299292000000,0,de:11000:900020201,0,6,5555 S+U Jungfernheide Bhf (Berlin),47
+de:11000:900020202:1:50,,S Beusselstr. (Berlin),S-Bahnsteig Gleis 1,52.534359000000,13.329406000000,0,de:11000:900020202,0,1,5555 S Beusselstr. (Berlin),68
+de:11000:900020202:1:51,,S Beusselstr. (Berlin),S-Bahnsteig Gleis 2,52.534452000000,13.329361000000,0,de:11000:900020202,0,2,5555 S Beusselstr. (Berlin),68
+de:11000:900024101:3:54,,S Charlottenburg Bhf (Berlin),S-Bahnsteig Gleis 5,52.504929000000,13.304487000000,0,de:11000:900024101,0,5,5555 S Charlottenburg Bhf (Berlin),50
+de:11000:900024101:4:56,,S Charlottenburg Bhf (Berlin),S-Bahnsteig Gleis 7,52.505070000000,13.304390000000,0,de:11000:900024101,0,7,5555 S Charlottenburg Bhf (Berlin),50
+de:11000:900024106:1:50,,S Messe Nord/ZOB (Berlin),S-Bahnsteig Gleis 1,52.507703000000,13.283556000000,0,de:11000:900024106,0,1,5555 S Messe Nord/ZOB (Berlin),64
+de:11000:900024106:1:51,,S Messe Nord/ZOB (Berlin),S-Bahnsteig Gleis 2,52.507739000000,13.283409000000,0,de:11000:900024106,0,2,5555 S Messe Nord/ZOB (Berlin),64
+de:11000:900026207:1:50,,S Westend (Berlin),S-Bahnsteig Gleis 1,52.517888000000,13.284378000000,0,de:11000:900026207,0,1,5555 S Westend (Berlin),64
+de:11000:900026207:1:51,,S Westend (Berlin),S-Bahnsteig Gleis 2,52.517906000000,13.284555000000,0,de:11000:900026207,0,2,5555 S Westend (Berlin),64
+de:11000:900040101:1:50,,S Halensee (Berlin),S-Bahnsteig Gleis 1,52.496038000000,13.290596000000,0,de:11000:900040101,0,,5555 S Halensee (Berlin),64
+de:11000:900044101:1:50,,S Hohenzollerndamm (Berlin),S-Bahnsteig Gleis 1,52.488671000000,13.300271000000,0,de:11000:900044101,0,,5555 S Hohenzollerndamm (Berlin),68
+de:11000:900044202:1:50,,S+U Bundesplatz (Berlin),S-Bahnsteig Gleis 1,52.477687000000,13.329539000000,0,de:11000:900044202,0,1,5555 S+U Bundesplatz (Berlin),47
+de:11000:900044202:1:51,,S+U Bundesplatz (Berlin),S-Bahnsteig Gleis 2,52.477611000000,13.329544000000,0,de:11000:900044202,0,2,5555 S+U Bundesplatz (Berlin),47
+de:11000:900045102:1:50,,S+U Heidelberger Platz (Berlin),S-Bahnsteig Gleis 1,52.480059000000,13.311856000000,0,de:11000:900045102,0,1,5555 S+U Heidelberger Platz (Berlin),134
+de:11000:900045102:1:51,,S+U Heidelberger Platz (Berlin),S-Bahnsteig Gleis 2,52.480026000000,13.311782000000,0,de:11000:900045102,0,2,5555 S+U Heidelberger Platz (Berlin),134
+de:11000:900054105:1:50,,S+U Innsbrucker Platz (Berlin),S-Bahnsteig Gleis 1,52.478176000000,13.341468000000,0,de:11000:900054105,0,1,5555 S+U Innsbrucker Platz (Berlin),132
+de:11000:900054105:1:51,,S+U Innsbrucker Platz (Berlin),S-Bahnsteig Gleis 2,52.478047000000,13.341463000000,0,de:11000:900054105,0,2,5555 S+U Innsbrucker Platz (Berlin),132
+de:11000:900068201:1:50,,S+U Tempelhof (Berlin),S-Bahnsteig Gleis 1,52.471027000000,13.384476000000,0,de:11000:900068201,0,1,5555 S+U Tempelhof (Berlin),132
+de:11000:900068201:1:51,,S+U Tempelhof (Berlin),S-Bahnsteig Gleis 2,52.470922000000,13.384416000000,0,de:11000:900068201,0,2,5555 S+U Tempelhof (Berlin),132
+de:11000:900077106:1:50,,S Sonnenallee (Berlin),S-Bahnsteig Gleis 1,52.472990000000,13.455632000000,0,de:11000:900077106,0,,5555 S Sonnenallee (Berlin),170
+de:11000:900077106:1:51,,S Sonnenallee (Berlin),S-Bahnsteig Gleis 2,52.472954000000,13.455771000000,0,de:11000:900077106,0,,5555 S Sonnenallee (Berlin),170
+de:11000:900077155:1:50,,S Köllnische Heide (Berlin),S-Bahnsteig Gleis 1,52.469676000000,13.468060000000,0,de:11000:900077155,0,,5656 S Köllnische Heide (Berlin),50
+de:11000:900077155:1:51,,S Köllnische Heide (Berlin),S-Bahnsteig Gleis 2,52.469600000000,13.468084000000,0,de:11000:900077155,0,,5656 S Köllnische Heide (Berlin),50
+de:11000:900078201:1:50,,S+U Neukölln (Berlin),S-Bahnsteig Gleis 1,52.469492000000,13.443156000000,0,de:11000:900078201,0,,5555 S+U Neukölln (Berlin),55
+de:11000:900078201:1:51,,S+U Neukölln (Berlin),S-Bahnsteig Gleis 2,52.469373000000,13.443216000000,0,de:11000:900078201,0,,5555 S+U Neukölln (Berlin),55
+de:11000:900079221:1:50,,S+U Hermannstr. (Berlin),S-Bahnsteig Gleis 1,52.467690000000,13.431204000000,0,de:11000:900079221,0,1,5555 S+U Hermannstr. (Berlin),136
+de:11000:900079221:1:51,,S+U Hermannstr. (Berlin),S-Bahnsteig Gleis 2,52.467578000000,13.431255000000,0,de:11000:900079221,0,2,5555 S+U Hermannstr. (Berlin),136
+de:11000:900110001:1:50,,S+U Schönhauser Allee (Berlin),S-Bahnsteig Gleis 1,52.549274000000,13.415186000000,0,de:11000:900110001,0,1,5555 S+U Schönhauser Allee (Berlin),136
+de:11000:900110001:1:51,,S+U Schönhauser Allee (Berlin),S-Bahnsteig Gleis 2,52.549382000000,13.415241000000,0,de:11000:900110001,0,2,5555 S+U Schönhauser Allee (Berlin),136
+de:11000:900110002:1:50,,S Prenzlauer Allee (Berlin),S-Bahnsteig Gleis 1,52.544757000000,13.425865000000,0,de:11000:900110002,0,1,5555 S Prenzlauer Allee (Berlin),63
+de:11000:900110002:1:51,,S Prenzlauer Allee (Berlin),S-Bahnsteig Gleis 2,52.544860000000,13.425975000000,0,de:11000:900110002,0,2,5555 S Prenzlauer Allee (Berlin),63
+de:11000:900191001:2:52,,S Baumschulenweg (Berlin),S-Bahnsteig Gleis 3,52.467495000000,13.489615000000,0,de:11000:900191001,0,3,5656 S Baumschulenweg (Berlin),183
+de:11000:900191001:1:50,,S Baumschulenweg (Berlin),S-Bahnsteig Gleis 4,52.467637000000,13.489731000000,0,de:11000:900191001,0,4,5656 S Baumschulenweg (Berlin),183
+de:11000:900191001:2:51,,S Baumschulenweg (Berlin),S-Bahnsteig Gleis 5,52.467537000000,13.489686000000,0,de:11000:900191001,0,5,5656 S Baumschulenweg (Berlin),183
+de:11000:900191002:1:50,,S Plänterwald (Berlin),S-Bahnsteig Gleis 3,52.478467000000,13.473270000000,0,de:11000:900191002,0,3,5656 S Plänterwald (Berlin),138
+de:11000:900191002:1:51,,S Plänterwald (Berlin),S-Bahnsteig Gleis 4,52.478530000000,13.473390000000,0,de:11000:900191002,0,4,5656 S Plänterwald (Berlin),138
+de:11000:900192001:2:52,,S Schöneweide Bhf (Berlin),S-Bahnsteig Gleis 3,52.454742000000,13.509730000000,0,de:11000:900192001,0,3,5656 S Schöneweide Bhf (Berlin),170
+de:11000:900192001:2:53,,S Schöneweide Bhf (Berlin),S-Bahnsteig Gleis 4,52.454800000000,13.509830000000,0,de:11000:900192001,0,4,5656 S Schöneweide Bhf (Berlin),170
+de:11000:900192001:3:54,,S Schöneweide Bhf (Berlin),S-Bahnsteig Gleis 5,52.454850000000,13.509917000000,0,de:11000:900192001,0,5,5656 S Schöneweide Bhf (Berlin),170
+de:11000:900192001:3:55,,S Schöneweide Bhf (Berlin),S-Bahnsteig Gleis 6,52.454912000000,13.510019000000,0,de:11000:900192001,0,6,5656 S Schöneweide Bhf (Berlin),170
+de:11000:900193001:1:50,,S Johannisthal (Berlin),S-Bahnsteig Gleis 3,52.446620000000,13.524071000000,0,de:11000:900193001,0,3,5656 S Johannisthal (Berlin),184
+de:11000:900193001:2:51,,S Johannisthal (Berlin),S-Bahnsteig 4,52.446662000000,13.524141000000,0,de:11000:900193001,0,4,5656 S Johannisthal (Berlin),184
+de:11000:900193002:1:50,,S Adlershof (Berlin),S-Bahnsteig Gleis 3,52.434867000000,13.541224000000,0,de:11000:900193002,0,3,5656 S Adlershof (Berlin),181
+de:11000:900193002:1:51,,S Adlershof (Berlin),S-Bahnsteig Gleis 4,52.434946000000,13.541382000000,0,de:11000:900193002,0,4,5656 S Adlershof (Berlin),181
+de:11000:900009104:1:50,,S+U Wedding (Berlin),S-Bahnsteig Gleis 1,52.543042000000,13.367693000000,0,de:11000:900009104,0,1,5555 S+U Wedding (Berlin),138
+de:11000:900009104:1:51,,S+U Wedding (Berlin),S-Bahnsteig Gleis 2,52.543102000000,13.367604000000,0,de:11000:900009104,0,2,5555 S+U Wedding (Berlin),138
+de:11000:900024102:3:54,,S Westkreuz (Berlin),S-Bahnsteig Gleis 11,52.500854000000,13.283931000000,0,de:11000:900024102,0,11,5555 S Westkreuz (Berlin),168
+de:11000:900024102:3:55,,S Westkreuz (Berlin),S-Bahnsteig Gleis 12,52.500811000000,13.283790000000,0,de:11000:900024102,0,12,5555 S Westkreuz (Berlin),168
+de:11000:900054104:2:52,,S Schöneberg (Berlin),S-Bahnsteig Gleis 11,52.479325000000,13.351584000000,0,de:11000:900054104,0,11,5555 S Schöneberg (Berlin),202
+de:11000:900054104:2:53,,S Schöneberg (Berlin),S-Bahnsteig Gleis 12,52.479240000000,13.351632000000,0,de:11000:900054104,0,12,5555 S Schöneberg (Berlin),202
+de:11000:900058101:5:58,,S Südkreuz Bhf (Berlin),S-Bahnsteig Gleis 11,52.475881000000,13.365602000000,0,de:11000:900058101,0,11,5555 S Südkreuz Bhf (Berlin),229
+de:11000:900058101:5:59,,S Südkreuz Bhf (Berlin),S-Bahnsteig Gleis 12,52.475662000000,13.365184000000,0,de:11000:900058101,0,12,5555 S Südkreuz Bhf (Berlin),229
+de:11000:900186001:1:50,,S Grünau (Berlin),S-Bahnsteig Gleis 1,52.412432000000,13.573957000000,0,de:11000:900186001,0,1,5656 S Grünau (Berlin),227
+de:11000:900186001:1:51,,S Grünau (Berlin),S-Bahnsteig Gleis 2,52.412481000000,13.574059000000,0,de:11000:900186001,0,2,5656 S Grünau (Berlin),227
+de:11000:900186001:2:52,,S Grünau (Berlin),S-Bahnsteig Gleis 3,52.412518000000,13.574189000000,0,de:11000:900186001,0,3,5656 S Grünau (Berlin),227
+de:11000:900186001:2:53,,S Grünau (Berlin),S-Bahnsteig Gleis 4,52.412568000000,13.574282000000,0,de:11000:900186001,0,4,5656 S Grünau (Berlin),227
+de:11000:900110003:1:50,,S Greifswalder Str. (Berlin),S-Bahnsteig Gleis 1,52.540109000000,13.439108000000,0,de:11000:900110003,0,1,5555 S Greifswalder Str. (Berlin),170
+de:11000:900110003:1:51,,S Greifswalder Str. (Berlin),S-Bahnsteig Gleis 2,52.540212000000,13.439227000000,0,de:11000:900110003,0,2,5555 S Greifswalder Str. (Berlin),170
+de:11000:900110004:1:50,,S Landsberger Allee (Berlin),S-Bahnsteig Gleis 1,52.529316000000,13.454840000000,0,de:11000:900110004,0,1,5555 S Landsberger Allee (Berlin),83
+de:11000:900110004:1:51,,S Landsberger Allee (Berlin),S-Bahnsteig Gleis 2,52.529386000000,13.454998000000,0,de:11000:900110004,0,2,5555 S Landsberger Allee (Berlin),83
+de:11000:900110012:1:50,,S Storkower Str. (Berlin),S-Bahnsteig Gleis 1,52.523660000000,13.465047000000,0,de:11000:900110012,0,1,5555 S Storkower Str. (Berlin),139
+de:11000:900110012:1:51,,S Storkower Str. (Berlin),S-Bahnsteig Gleis 2,52.523731000000,13.465094000000,0,de:11000:900110012,0,2,5555 S Storkower Str. (Berlin),139
+de:11000:900120001:1:50,,S+U Frankfurter Allee (Berlin),S Bahnsteig Gleis 1,52.515383000000,13.474280000000,0,de:11000:900120001,0,1,5555 S+U Frankfurter Allee (Berlin),162
+de:11000:900120001:1:51,,S+U Frankfurter Allee (Berlin),S Bahnsteig Gleis 2,52.515401000000,13.474370000000,0,de:11000:900120001,0,2,5555 S+U Frankfurter Allee (Berlin),162
+de:11000:900120003:5:58,,S Ostkreuz Bhf (Berlin),S-Bahnsteig Gleis 11,52.503422000000,13.469006000000,0,de:11000:900120003,0,11,5555 S Ostkreuz Bhf (Berlin),31
+de:11000:900120003:5:59,,S Ostkreuz Bhf (Berlin),S-Bahnsteig Gleis 12,52.503314000000,13.469607000000,0,de:11000:900120003,0,12,5555 S Ostkreuz Bhf (Berlin),31
+de:11000:900190001:1:50,,S Treptower Park (Berlin),S-Bahnsteig Gleis 1,52.493746000000,13.461502000000,0,de:11000:900190001,0,1,5555 S Treptower Park (Berlin),181
+de:11000:900190001:2:52,,S Treptower Park (Berlin),S-Bahnsteig Gleis 2,52.493667000000,13.461736000000,0,de:11000:900190001,0,2,5555 S Treptower Park (Berlin),181
+de:11000:900190001:2:53,,S Treptower Park (Berlin),S-Bahnsteig Gleis 4,52.493629000000,13.461846000000,0,de:11000:900190001,0,4,5555 S Treptower Park (Berlin),181
+de:11000:900190001:1:51,,S Treptower Park (Berlin),S-Bahnsteig Gleis 3,52.493711000000,13.461615000000,0,de:11000:900190001,0,3,5555 S Treptower Park (Berlin),181

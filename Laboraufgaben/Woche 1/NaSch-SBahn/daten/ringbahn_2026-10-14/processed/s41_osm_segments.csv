@@ -1,0 +1,28 @@
+﻿segment_sequence,from_station,to_station,length_m,from_distance_m,to_distance_m
+1,Gesundbrunnen,Schönhauser Allee,1804.847,0.0,1804.847
+2,Schönhauser Allee,Prenzlauer Allee,828.324,1804.847,2633.171
+3,Prenzlauer Allee,Greifswalder Straße,1055.446,2633.171,3688.617
+4,Greifswalder Straße,Landsberger Allee,1651.791,3688.617,5340.408
+5,Landsberger Allee,Storkower Straße,952.803,5340.408,6293.211
+6,Storkower Straße,Frankfurter Allee,1224.388,6293.211,7517.599
+7,Frankfurter Allee,Ostkreuz,1446.787,7517.599,8964.386
+8,Ostkreuz,Treptower Park,1188.911,8964.386,10153.297
+9,Treptower Park,Sonnenallee,2382.154,10153.297,12535.451
+10,Sonnenallee,Neukölln,963.728,12535.451,13499.179
+11,Neukölln,Hermannstraße,841.443,13499.179,14340.622
+12,Hermannstraße,Tempelhof,3384.626,14340.622,17725.248
+13,Tempelhof,Südkreuz,1521.688,17725.248,19246.936
+14,Südkreuz,Schöneberg,1142.783,19246.936,20389.719
+15,Schöneberg,Innsbrucker Platz,721.771,20389.719,21111.49
+16,Innsbrucker Platz,Bundesplatz,797.189,21111.49,21908.679
+17,Bundesplatz,Heidelberger Platz,1295.131,21908.679,23203.81
+18,Heidelberger Platz,Hohenzollerndamm,1220.644,23203.81,24424.454
+19,Hohenzollerndamm,Halensee,1010.546,24424.454,25435.0
+20,Halensee,Westkreuz,774.055,25435.0,26209.055
+21,Westkreuz,Messe Nord/ZOB,785.122,26209.055,26994.177
+22,Messe Nord/ZOB,Westend,1221.908,26994.177,28216.085
+23,Westend,Jungfernheide,2206.281,28216.085,30422.366
+24,Jungfernheide,Beusselstraße,2063.753,30422.366,32486.119
+25,Beusselstraße,Westhafen,1034.99,32486.119,33521.109
+26,Westhafen,Wedding,1810.942,33521.109,35332.051
+27,Wedding,Gesundbrunnen,1639.548,35332.051,36971.599

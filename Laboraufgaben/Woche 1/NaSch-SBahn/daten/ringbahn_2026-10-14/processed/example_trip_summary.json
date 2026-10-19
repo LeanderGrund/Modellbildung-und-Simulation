@@ -1,0 +1,62 @@
+[
+  {
+    "line": "S41",
+    "trip_id": "308542990",
+    "service_id": "646",
+    "shape_id": "2915",
+    "reference_service_date": "2026-10-14",
+    "first_departure": "8:03:24",
+    "return_arrival": "9:02:42",
+    "departure_to_return_arrival_seconds": 3558,
+    "shape_length_m": 39606.482,
+    "shape_point_count": 887,
+    "interior_dwell_seconds_sum": 870,
+    "interior_dwell_seconds_min": 30,
+    "interior_dwell_seconds_max": 48,
+    "endpoint_dwell_unknown": true,
+    "max_shape_point_offset_m": 6.284,
+    "max_osm_gtfs_station_difference_m": 98.243,
+    "trip_source_row": {
+      "route_id": "10224_109",
+      "service_id": "646",
+      "trip_id": "308542990",
+      "trip_headsign": "Ringbahn S 41",
+      "trip_short_name": "41576",
+      "direction_id": "0",
+      "block_id": "1010",
+      "shape_id": "2915",
+      "wheelchair_accessible": "1",
+      "bikes_allowed": "1"
+    }
+  },
+  {
+    "line": "S42",
+    "trip_id": "308548978",
+    "service_id": "646",
+    "shape_id": "3050",
+    "reference_service_date": "2026-10-14",
+    "first_departure": "8:03:18",
+    "return_arrival": "9:02:36",
+    "departure_to_return_arrival_seconds": 3558,
+    "shape_length_m": 39741.099,
+    "shape_point_count": 946,
+    "interior_dwell_seconds_sum": 888,
+    "interior_dwell_seconds_min": 30,
+    "interior_dwell_seconds_max": 48,
+    "endpoint_dwell_unknown": true,
+    "max_shape_point_offset_m": 9.519,
+    "max_osm_gtfs_station_difference_m": 86.986,
+    "trip_source_row": {
+      "route_id": "10227_109",
+      "service_id": "646",
+      "trip_id": "308548978",
+      "trip_headsign": "Ringbahn S 42",
+      "trip_short_name": "42573",
+      "direction_id": "0",
+      "block_id": "1037",
+      "shape_id": "3050",
+      "wheelchair_accessible": "1",
+      "bikes_allowed": "1"
+    }
+  }
+]
