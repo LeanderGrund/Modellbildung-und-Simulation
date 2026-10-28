@@ -1,37 +1,39 @@
 # S-Bahn-Ring – Woche 2
 
-## Aufgabe 1: Referenzabgleich
+## Datenweg und Versuchskonvention
 
-Vor der Anpassung gewählte Größen: Abfahrt Beusselstraße bis Rückkehrankunft (Kalibrierung) und die 27 reinen Abschnittsfahrzeiten (Prüfung). Die GTFS-Referenz beträgt 3558 s, Fahrt S41 `308542990` am 14.10.2026 von 08:03:24 bis 09:02:42. Es handelt sich um Sollbetrieb.
+`run_sbahn2` gibt die tatsächlich berechneten Zahlen als `results.plotData` zurück und schreibt sie nach `diagrammdaten.mat`. Python liest diese Zahlen direkt ein und prüft auch die gezeichneten Linienkoordinaten. Alle aktuellen Läufe stehen in `laufverzeichnis.csv`; `diagrammwerte_pruefung.csv` dokumentiert die unabhängige Zahlenprüfung. Es werden keine Kurvenwerte von Hand im Zeichenskript eingetragen.
 
-Die effektive Geschwindigkeitsgrenze wird in allen zulässigen ganzzahligen Stufen 14–22 m/s untersucht; alle anderen Parameter bleiben unverändert. Das kleinste absolute Residuum ergibt sich bei 16 m/s = 57,6 km/h: 3599 s (+41 s, +1,15 %). Vorher: 3131 s. Der volle Modellumlauf beträgt 3641 s; der Anfangshalt von 42 s wird zum Vergleich abgezogen. Die Innenhalte ergeben genau die 870 s der Referenz. Endpunkte werden nicht als Nullhalte behandelt.
+## Aufgabe 1: Geschwindigkeitsgrenze
 
-Abschnittsvalidierung: MAE vorher 15,8 s, nachher 8,0 s; RMSE vorher 16,5 s, nachher 11,4 s. Keine Nachoptimierung auf diese Werte. Prüfung und Kalibrierung verwenden denselben Fahrplan, keine unabhängigen Ist-Messungen.
+![Geschwindigkeitsgrenze](diagramme/geschwindigkeitsgrenze.png)
 
-## Aufgabe 2: Parameterstudien
+Neun vollständig simulierte Kandidaten; ein freier Zug. Kleinster absoluter Fehler bei 57,6 km/h: 3599 statt 3558 s. Vorher: 3131 s bei 79,2 km/h. Kalibriert wird Abfahrt bis Rückkehrankunft; die 27 reinen Abschnittsfahrzeiten dienen anschließend zur Prüfung. Die Grenze ist ein effektiver Modellparameter, keine Messung der Fahrzeughöchstgeschwindigkeit.
 
-Der Durchsatz steigt von 4,0 Zügen/h bei N=4 bis maximal 32,3 Zügen/h bei N=40. Bei N=40 werden 32,3 Züge/h und 436,7 s blockierter Stillstand je Zug und Stunde gemessen. Ab N=36 liegt die Zugfolge bei 112 s (32,14 Züge/h). Unterschiede um einen Zählwert entsprechen 0,33 Zügen/h; mehr Züge vergrößern hier vor allem Rückstaus.
+## Aufgabe 2: Zugzahl
 
 ![Zugzahlstudie](diagramme/zugzahl.png)
 
-Bei N=36 verändert eine Erhöhung der einheitlichen Haltezeit von 15 auf 60 s den Durchsatz von 41,3 auf 29,3 Züge/h. Längere Halte erhöhen die freie Umlaufzeit um 27 s je zusätzlicher Haltsekunde. Hier bleibt der blockierte Stillstand durchweg null. Bei ähnlichem Mittelwert liefert das gleichmäßige 34-s-Profil 35,33 Züge/h, das GTFS-Profil 32,00: Auch die Stationsverteilung der Halte ist entscheidend.
+Die Untersuchung beginnt bei N=12 (grüner Stern) und umfasst 8 Zugzahlen. Bei N=36 werden 32,0 Züge/h und 226,4 s Stillstand je Zug und Stunde gemessen. Ab hier erhöhen weitere Züge vor allem die Wartezeit.
 
-![Haltezeitstudie](diagramme/haltezeit.png)
+## Aufgabe 2: Haltezeit
 
-Bei der Zugzahlstudie bleiben die GTFS-Halte unverändert; bei der Haltezeitstudie sind alle Halte je Lauf gleich und N=36 bleibt fest. Zehn Zugzahlen und acht Haltezeiten, jeweils 60 min Einschwingen und 180 min Messung. Q ist die Zahl der Abfahrten an Station 1 im Intervall [3600,14400) geteilt durch 3 h. Blockierter Stillstand schließt geplante Stationshalte und langsames Folgen aus. Keine Zufallseinflüsse, deshalb ein deterministischer Lauf pro Parametersatz; `headway_std_s` ist die Streuung der beobachteten Zugabstände, keine Wiederholungsstreuung.
+![GTFS-Halte plus Zuschlag](diagramme/haltezeit.png)
+
+Sechs Profile: GTFS plus 0, 6, 12, 18, 24 oder 30 s je Station, durchgehend N=36. GTFS+0 stimmt exakt mit N=36 aus der ersten Grafik überein (violette Rauten). GTFS+30 liefert 25,3 Züge/h und 357,0 s Stillstand je Zug und Stunde.
+
+Es gelten jeweils dieselben GTFS-Stationsmediane plus Zuschlag. Der Nullzuschlag bei N=36 ist hinsichtlich vollständiger Trajektorien und Kennzahlen bitgenau identisch zum N=36-Fall der Zugzahlstudie. Die Phasenverschiebungen der sechs Anfangszustände betragen 0, 2, 6, 11, 15, 25 s; die regelmäßigen zeitlichen Zugabstände werden dabei erhalten. Die kleinste gültige Verschiebung verhindert bereits zu Beginn gemeinsam belegte Blöcke.
+
+## Raum-Zeit-Diagramm
 
 ![Raum-Zeit-Diagramm](diagramme/raumzeit.png)
 
-## Sanity Checks und Grenzen
+## Kennzahlen und Prüfungen
 
-20 Läufe mit jeweils zwölf zusätzlichen Sanity Checks; 68 MATLAB-Tests bestanden. Grundregeln: Zugerhaltung, ganzzahlige Ringzustände, zulässige Geschwindigkeiten/Beschleunigungen, korrekte synchrone Ringbewegung, Kollisionsfreiheit, Stationshalt, Bremsreserve und unabhängig rekonstruierter Abfahrtsdetektor. Die Modellprüfungen aus Woche 1 kontrollieren außerdem Stationsreihenfolge, Mindesthalte und exklusive Blockbelegung samt Freigabe am Zugende. Zwei Regressionen vergleichen On/Off und Fahrdynamik bei Standardgeschwindigkeit mit dem Original aus Woche 1. `sanity_checks.csv` und `matlab_tests.csv` enthalten die Ergebnisse.
+Je Lauf 60 Minuten Einschwingen und 180 Minuten Messung. Durchsatz: gezählte Abfahrten an Station 1 geteilt durch die Messdauer in Stunden. Stillstand: tatsächliche bewegungslose Sekunden ohne laufenden Stationshalt, normiert auf Zug und Stunde. Die gemeinsame Achsenskalierung macht beide Parameterdiagramme vergleichbar. Ohne Zufallseinflüsse genügt ein deterministischer Lauf je Einstellung.
 
-Die effektive Geschwindigkeitsgrenze bündelt unbekannte örtliche Limits und Fahrplanreserven. Sie ist keine gemessene Fahrzeughöchstgeschwindigkeit. Ein guter Umlaufwert allein bestätigt die lokalen Fahrzeiten nicht. Ideale Haltepunkte, identische Fahrzeuge, konstante Beschleunigung und modellhafte 500-m-Blöcke erklären weitere Unterschiede. Die Ergebnisse gelten für diesen deterministischen Modellbereich und das endliche Messfenster; sie bestimmen keine reale Streckenkapazität.
+71 MATLAB-Tests, 25 ausgewertete Läufe und 377 unabhängig geprüfte Zahlenwerte. Grundregeln, vollständige Tabellenexporte, gemessene Referenzfahrzeiten, gemeinsamer Betriebspunkt und optimale Geschwindigkeitsmarkierung sind geprüft. `headway_std_s` beschreibt zeitliche Zugabstände, keine Wiederholungsstreuung.
 
-## Code, Quellen und KI-Einsatz
+## Quellen, Grenzen und KI
 
-Modellkern aus `../Woche 1/NaSch-SBahn/+sbahn` als lokales Paket `modell/+sbahn2`; die vier Bewegungsschritte und Blockregeln bleiben erhalten. Geändert wurden konfigurierbare effektive Geschwindigkeitsgrenze und Datenpfad. Quelldaten werden direkt aus Woche 1 gelesen. Das Original bleibt unverändert. `quellcode_herkunft.json` dokumentiert Hashes und betroffene Dateien.
-
-VBB-GTFS, CC BY 4.0: https://unternehmen.vbb.de/digitale-services/datensaetze/ ; Gleisgeometrie © OpenStreetMap contributors, ODbL: https://www.openstreetmap.org/relation/14981 . Dokumentierter Abruf 14.10.2026; Herkunft, Rohdaten, Lizenzen und Geometriegrenzen im Daten-README aus Woche 1.
-
-Codex unterstützte Übernahme und Erweiterung des MATLAB-Codes, Versuchsauswertung, Prüfungen und Text. Ergebnisse wurden in MATLAB R2026a ausgeführt, nicht aus Referenzwerten erfunden. Reproduktion: `SBahn2.m`, anschließend `py tools/erstelle_bericht.py`; vollständige Daten unter `ergebnisse/laeufe/`.
+VBB-GTFS: S41 trip_id 308542990 am 14.10.2026; Sollzeiten. Kartierte Geometrie: © OpenStreetMap contributors, Relation 14981. Quellen und Lizenzen im Daten-README aus Woche 1. Ideale Haltepunkte, identische Fahrzeuge, vereinfachte Blöcke und effektive Geschwindigkeitsgrenze begrenzen die Aussage über reale Streckenkapazität. Codex unterstützte Implementierung, Versuchsprüfung und Text. Alle Zahlen stammen aus ausgeführten MATLAB-Läufen.

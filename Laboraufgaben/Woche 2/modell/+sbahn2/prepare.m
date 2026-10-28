@@ -42,11 +42,15 @@ dwell = struct('seconds',repmat(config.stopSeconds,1,model.stationCount), ...
 if config.dwellMode == "GTFS-Stationshalte"
     dwell = loadDwellProfile(model.route);
 end
-model.stationDwellSeconds = dwell.seconds;
-model.dwellSteps = round(dwell.seconds/model.stepSeconds);
+model.baseStationDwellSeconds = dwell.seconds;
+model.stationDwellSeconds = dwell.seconds+config.dwellOffsetSeconds;
+model.dwellSteps = round(model.stationDwellSeconds/model.stepSeconds);
 model.dwellSource = dwell.source;
+if config.dwellOffsetSeconds > 0
+    model.dwellSource = dwell.source+compose("; je Station +%g s",config.dwellOffsetSeconds);
+end
 model.dwellSampleCounts = dwell.sampleCounts;
-assert(all(abs(model.dwellSteps*model.stepSeconds-dwell.seconds) < 1e-9), ...
+assert(all(abs(model.dwellSteps*model.stepSeconds-model.stationDwellSeconds) < 1e-9), ...
     'SBahn:TimeGrid','Haltezeit muss ein Vielfaches des Zeitschritts sein.');
 assert(~dynamic || all(model.dwellSteps >= 1),'SBahn:DynamicsDwell', ...
     'Beschleunigen und Bremsen benötigt mindestens eine Sekunde Halt je Station.');
@@ -67,6 +71,9 @@ function validateConfig(config)
 %validateConfig - Sämtliche bedienbaren Einstellungen zentral prüfen
 validateattributes(config.cruiseSpeedKmh,{'numeric'}, ...
     {'scalar','real','finite','>=',3.6,'<=',80});
+validateattributes(config.dwellOffsetSeconds,{'numeric'}, ...
+    {'scalar','real','finite','integer','nonnegative'});
+validateattributes(config.initialPhaseSearch,{'logical'},{'scalar'});
 assert(isstring(config.dataFolder) && isscalar(config.dataFolder), ...
     'SBahn:DataFolder','dataFolder muss ein einzelner Pfad als String sein.');
 choices = {"trackMode",["Idealisierter Ring","Reale Ringbahn S41"],"SBahn:TrackMode"; ...

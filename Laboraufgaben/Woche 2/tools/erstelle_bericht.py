@@ -1,15 +1,17 @@
-"""Drei PDF-Seiten und Diagramme aus den tatsächlich berechneten MATLAB-Daten.
+"""Diagramme und dreiseitiger Bericht aus direkt exportierten MATLAB-Zahlen.
 
 Aufruf: py tools/erstelle_bericht.py
-Abhängigkeiten: numpy, scipy, matplotlib (kein Netzwerkzugriff).
+Alle Kurvenkoordinaten und markierten Betriebspunkte stammen aus
+ergebnisse/diagrammdaten.mat (run_sbahn2 -> results.plotData).
+Python berechnet keine Simulationskennzahlen und wählt kein Optimum aus.
 """
 from __future__ import annotations
 
 import csv
 import hashlib
 import json
-import textwrap
 from pathlib import Path
+import textwrap
 
 import matplotlib
 matplotlib.use("Agg")
@@ -22,36 +24,130 @@ from scipy.io import loadmat
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "ergebnisse"
 FIG = OUT / "diagramme"
-FIG.mkdir(exist_ok=True)
+BLUE, ORANGE, GRAY, GREEN, PURPLE = "#146b9c", "#c57618", "#778b96", "#238054", "#7946a2"
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 9,
                      "axes.spines.top": False, "axes.grid": True,
                      "grid.alpha": .22, "pdf.fonttype": 42})
 
 
-def rows(name: str) -> list[dict]:
+def rows(name):
     with (OUT / name).open(encoding="utf-8-sig", newline="") as f:
         return list(csv.DictReader(f))
 
 
-def numbers(data: list[dict], key: str) -> np.ndarray:
-    return np.array([float(r[key]) for r in data])
+def vector(data, key):
+    return np.atleast_1d(np.asarray(data[key], dtype=float)).ravel()
 
 
-def fmt(x: float, digits: int = 1) -> str:
-    return f"{x:.{digits}f}".replace(".", ",")
+def fmt(value, digits=1):
+    return f"{float(value):.{digits}f}".replace(".", ",")
 
 
-def paragraph(fig, y, text, *, x=.075, width=104, size=9.1, color="#202a34"):
-    lines = textwrap.wrap(text, width=width, break_long_words=False,
-                          break_on_hyphens=False)
-    fig.text(x, y, "\n".join(lines), ha="left", va="top", fontsize=size,
-             linespacing=1.35, color=color)
-    return y - len(lines) * size * 1.35 / (11.69 * 72) - .012
+def index(data, key):
+    return int(data[key])-1  # MATLAB verwendet einsbasierte Indizes.
 
 
-def heading(fig, y, title):
-    fig.text(.075, y, title, fontsize=11, weight="bold", va="top", color="#123650")
-    return y - .032
+def parameter_plot(ax, data, label, role, qmax, waitmax):
+    x = vector(data, "x")
+    q = vector(data, "throughput")
+    free = vector(data, "freeThroughput")
+    wait = vector(data, "blockedSecondsPerTrainHour")
+    line, = ax.plot(x, q, "o-", color=BLUE, lw=1.8, label="gemessener Durchsatz")
+    reference, = ax.plot(x, free, "--", color=GRAY, lw=1.3, label="freier Referenzbetrieb")
+    ax.set(xlabel=label, ylabel="Durchsatz [Züge/h]", ylim=(0, qmax), xlim=(x[0], x[-1]))
+    ax.set_xticks(x)
+    twin = ax.twinx()
+    waiting, = twin.plot(x, wait, "s-", color=ORANGE, lw=1.5, ms=4, label="blockierter Stillstand")
+    twin.set_ylabel("Stillstand [s/(Zug·h)]", color="#a7600e")
+    twin.set_ylim(0, waitmax)
+    twin.grid(False)
+    base = index(data, "baseIndex")
+    if role == "trains":
+        ax.scatter(x[base], q[base], marker="*", s=125, c=GREEN, edgecolors="white",
+                   zorder=5, clip_on=False, label=f"Ausgangsfall N={int(data['baseTrainCount'])}")
+        ax.annotate(f"N={int(data['baseTrainCount'])}", (x[base], q[base]), xytext=(7, 7),
+                    textcoords="offset points", fontsize=8, color=GREEN)
+        common = index(data, "comparisonIndex")
+        common_label = f"Vergleich: N={int(x[common])}"
+    else:
+        common = base
+        common_label = "Vergleich: GTFS + 0 s"
+    ax.scatter(x[common], q[common], marker="D", s=58, facecolors="none",
+               edgecolors=PURPLE, lw=1.6, zorder=5, clip_on=False, label=common_label)
+    twin.scatter(x[common], wait[common], marker="D", s=58, facecolors="none",
+                 edgecolors=PURPLE, lw=1.6, zorder=5, clip_on=False)
+    handles, labels = ax.get_legend_handles_labels()
+    handles2, labels2 = twin.get_legend_handles_labels()
+    ax.legend(handles[:2]+handles2+handles[2:], labels[:2]+labels2+labels[2:],
+              loc="upper left", fontsize=6.9, framealpha=.94)
+    # Tatsächlich gezeichnete Linien müssen die MATLAB-Vektoren unverändert enthalten.
+    for artist, y in [(line, q), (reference, free), (waiting, wait)]:
+        np.testing.assert_array_equal(artist.get_xdata(), x)
+        np.testing.assert_array_equal(artist.get_ydata(), y)
+
+
+def speed_plot(ax, data):
+    x = vector(data, "xKmh")
+    seconds = vector(data, "modelSeconds")
+    reference = vector(data, "referenceSeconds")
+    errors = vector(data, "absoluteErrorSeconds")
+    chosen, initial = index(data, "bestIndex"), index(data, "initialIndex")
+    measured, = ax.plot(x, seconds, "o-", color=BLUE, lw=1.8, label="simulierte Fahrzeit")
+    planned, = ax.plot(x, reference, "--", color=GRAY, lw=1.3, label="GTFS-Referenz")
+    ax.scatter(x[chosen], seconds[chosen], marker="*", s=150, c=GREEN,
+               edgecolors="white", zorder=5, label="kleinster Fehler")
+    ax.scatter(x[initial], seconds[initial], marker="o", s=75, facecolors="none",
+               edgecolors=BLUE, lw=1.7, clip_on=False, zorder=5, label="vorherige Grenze")
+    ax.annotate(f"Optimum: {fmt(x[chosen])} km/h\nFehler: {fmt(errors[chosen],0)} s",
+                (x[chosen], seconds[chosen]), xytext=(12, 14), textcoords="offset points",
+                fontsize=8, color=GREEN, arrowprops={"arrowstyle": "-", "color": GREEN})
+    ax.set(xlabel="Effektive Geschwindigkeitsgrenze [km/h]",
+           ylabel="Abfahrt bis Rückkehrankunft [s]", xlim=(x[0], x[-1]))
+    ax.set_ylim(min(seconds.min(), reference.min())-180, max(seconds.max(), reference.max())+160)
+    ax.set_xticks(x, [fmt(v) for v in x], fontsize=7.2)
+    twin = ax.twinx()
+    errorline, = twin.plot(x, errors, "s-", color=ORANGE, lw=1.5, ms=4, label="absoluter Fahrzeitfehler")
+    twin.set_ylabel("Absoluter Fehler [s]", color="#a7600e")
+    twin.set_ylim(0, max(1, errors.max()*1.18))
+    twin.grid(False)
+    handles, labels = ax.get_legend_handles_labels()
+    handles2, labels2 = twin.get_legend_handles_labels()
+    ax.legend(handles+handles2, labels+labels2, loc="lower left", fontsize=6.8, framealpha=.94)
+    for artist, y in [(measured, seconds), (planned, reference), (errorline, errors)]:
+        np.testing.assert_array_equal(artist.get_xdata(), x)
+        np.testing.assert_array_equal(artist.get_ydata(), y)
+
+
+def spacetime(ax, data):
+    x = np.asarray(data["positionKm"], dtype=float)
+    time = vector(data, "timeMinutes")
+    stations = vector(data, "stationKm")
+    blocked = np.asarray(data["blocked"], dtype=bool)
+    for station in stations:
+        ax.axvline(station, color="#9ba9b4", lw=.6, ls=":", zorder=0)
+    paths = []
+    for train in range(x.shape[1]):
+        xx = x[:, train].copy()
+        xx[np.r_[False, np.diff(xx) < 0]] = np.nan  # Ringsprünge grafisch unterbrechen.
+        paths.append(np.column_stack((xx, time)))
+    ax.add_collection(LineCollection(paths, colors=BLUE, linewidths=.65, alpha=.75))
+    row, col = np.where(blocked)
+    ax.scatter(x[row, col], time[row], s=1.2, c=ORANGE, zorder=3,
+               label="verkehrsbedingt blockiert")
+    ax.plot([], [], color=BLUE, label="Zugspitzen")
+    ax.plot([], [], ":", color="#9ba9b4", label="Stationen (Nummern oben)")
+    ax.set(xlim=(0, float(data["ringLengthKm"])), ylim=(float(data["durationMinutes"]), 0),
+           xlabel="Position entlang der S41 [km]",
+           ylabel=f"Zeit ab Minute {fmt(data['startMinute'],0)} [min]")
+    ax.legend(loc="lower left", fontsize=7, framealpha=.95)
+    top = ax.secondary_xaxis("top")
+    top.set_xticks(stations, [str(i+1) for i in range(len(stations))], fontsize=6.8)
+
+
+def paragraph(fig, y, text, *, size=8.6, width=112):
+    lines = textwrap.wrap(text, width=width, break_long_words=False, break_on_hyphens=False)
+    fig.text(.075, y, "\n".join(lines), va="top", fontsize=size, linespacing=1.32, color="#202a34")
+    return y-len(lines)*size*1.32/(11.69*72)-.012
 
 
 def page(number, subtitle):
@@ -64,266 +160,190 @@ def page(number, subtitle):
     return f
 
 
-def table_on(fig, bounds, cells, labels, widths=None, size=8.5):
-    ax = fig.add_axes(bounds)
-    ax.axis("off")
+def table_on(fig, bounds, cells, labels, widths, size=8):
+    ax = fig.add_axes(bounds); ax.axis("off")
     t = ax.table(cellText=cells, colLabels=labels, colWidths=widths,
                  cellLoc="left", colLoc="left", bbox=[0, 0, 1, 1])
-    t.auto_set_font_size(False)
-    t.set_fontsize(size)
+    t.auto_set_font_size(False); t.set_fontsize(size)
     for (r, c), cell in t.get_celld().items():
-        cell.set_edgecolor("#d6e0e7")
-        cell.set_linewidth(.5)
+        cell.set_edgecolor("#d6e0e7"); cell.set_linewidth(.5)
         cell.set_facecolor("#e7eff4" if r == 0 else ("#f5f8fa" if r % 2 else "white"))
-        if r == 0:
-            cell.set_text_props(weight="bold", color="#123650")
-    return t
+        if r == 0: cell.set_text_props(weight="bold", color="#123650")
 
 
-def parameter_plot(ax, data, key, label):
-    x = numbers(data, key)
-    q = numbers(data, "throughput_trains_per_h")
-    free = numbers(data, "free_throughput_trains_per_h")
-    wait = numbers(data, "blocked_s_per_train_h")
-    ax.plot(x, q, "o-", color="#146b9c", lw=1.8, label="gemessener Durchsatz")
-    ax.plot(x, free, "--", color="#778b96", lw=1.3, label="freier Referenzbetrieb")
-    ax.set(xlabel=label, ylabel="Durchsatz [Züge/h]")
-    ax.set_ylim(bottom=0)
-    twin = ax.twinx()
-    twin.plot(x, wait, "s-", color="#c57618", lw=1.5, ms=4, label="blockierter Stillstand")
-    twin.set_ylabel("Stillstand [s/(Zug·h)]", color="#a7600e")
-    twin.set_ylim(0, max(1, float(wait.max()) * 1.15))
-    twin.grid(False)
-    handles, labels = ax.get_legend_handles_labels()
-    handles2, labels2 = twin.get_legend_handles_labels()
-    ax.legend(handles + handles2, labels + labels2, loc="lower left", fontsize=7.4)
-
-
-def spacetime(ax, trace, start=10800, stop=12600):
-    t = np.asarray(trace["traceTime"]).ravel()
-    take = (t >= start) & (t <= stop)
-    x = np.asarray(trace["tracePosition"])[take, :] / 1000 - .001
-    tt = (t[take] - start) / 60
-    blocked = np.asarray(trace["traceBlocked"], dtype=bool)[take, :]
-    station = (np.asarray(trace["stationCells"]).ravel() - 1) / 1000
-    for s in station:
-        ax.axvline(s, color="#9ba9b4", lw=.6, ls=":", zorder=0)
-    paths = []
-    for k in range(x.shape[1]):
-        xx = x[:, k].copy()
-        xx[np.r_[False, np.diff(xx) < 0]] = np.nan
-        paths.append(np.column_stack((xx, tt)))
-    ax.add_collection(LineCollection(paths, colors="#18618b", linewidths=.65, alpha=.75))
-    ridx, cidx = np.where(blocked)
-    ax.scatter(x[ridx, cidx], tt[ridx], s=1.2, c="#d57909", zorder=3,
-               label="verkehrsbedingt blockiert")
-    ax.plot([], [], color="#18618b", label="Zugspitzen")
-    ax.plot([], [], ":", color="#9ba9b4", label="Stationen (Nummern oben)")
-    ax.set(xlim=(0, float(trace["cellCount"]) / 1000), ylim=(30, 0),
-           xlabel="Position entlang der S41 [km]", ylabel="Zeit ab Minute 180 [min]")
-    ax.legend(loc="lower left", fontsize=7, framealpha=.95)
-    top = ax.secondary_xaxis("top")
-    top.set_xticks(station, [str(i + 1) for i in range(len(station))], fontsize=6.8)
-    return ax
+def finish_page(pdf, fig, number):
+    fig.savefig(FIG / f"bericht_seite_{number}.png", dpi=130)
+    pdf.savefig(fig); plt.close(fig)
 
 
 def main():
-    p = json.loads((OUT / "parameter.json").read_text(encoding="utf-8-sig"))
-    ref = rows("referenzvergleich.csv")
-    tr = rows("zugzahlstudie.csv")
-    dw = rows("haltezeitstudie.csv")
-    val = rows("abschnittsvalidierung.csv")
-    checks = rows("sanity_checks.csv")
-    tests = rows("matlab_tests.csv") if (OUT / "matlab_tests.csv").exists() else []
-    assert all(str(value).lower() in {"1", "true"} for row in checks
-               for key, value in row.items() if key != "run"), "Sanity Check fehlgeschlagen"
-    assert tests and all(str(r["Passed"]).lower() in {"1", "true"} for r in tests), "MATLAB-Tests fehlen oder sind fehlgeschlagen"
-    before, after = ref
-    peak = max(tr, key=lambda r: float(r["throughput_trains_per_h"]))
-    first, last = tr[0], tr[-1]
-    trace = loadmat(OUT / "raumzeit.mat", squeeze_me=True)
+    FIG.mkdir(exist_ok=True)
+    data = loadmat(OUT / "diagrammdaten.mat", simplify_cells=True)["plotData"]
+    assert int(data["schemaVersion"]) == 2, "Diagrammdaten neu in MATLAB berechnen."
+    p = data["meta"]; tr = data["trains"]; dw = data["dwell"]; speed = data["speed"]
+    checks, tests, audit, manifest = (rows(name) for name in
+        ["sanity_checks.csv", "matlab_tests.csv", "diagrammwerte_pruefung.csv", "laufverzeichnis.csv"])
+    assert len(audit) == len(checks) == len(manifest) == int(p["evaluatedRunCount"])
+    assert {r["run"] for r in audit} == {r["run"] for r in manifest}
+    assert all(r["passed"].lower() in {"1", "true"} for r in audit)
+    assert all(v.lower() in {"1", "true"} for r in checks for k,v in r.items() if k != "run")
+    assert tests and all(r["Passed"].lower() in {"1", "true"} for r in tests)
+    common, zero = index(tr, "comparisonIndex"), index(dw, "baseIndex")
+    np.testing.assert_equal(tr["throughput"][common], dw["throughput"][zero])
+    np.testing.assert_equal(tr["blockedSecondsPerTrainHour"][common], dw["blockedSecondsPerTrainHour"][zero])
+    assert len(vector(dw,"x")) == 6 and np.array_equal(vector(dw,"x"), np.arange(0,31,6))
+    assert vector(tr,"x")[0] == p["baseTrainCount"]
+    qmax = max(vector(tr,"throughput").max(),vector(tr,"freeThroughput").max(),
+               vector(dw,"throughput").max(),vector(dw,"freeThroughput").max())*1.12
+    waitmax = max(1,vector(tr,"blockedSecondsPerTrainHour").max(),
+                  vector(dw,"blockedSecondsPerTrainHour").max())*1.15
+    for name, series, label, role in [
+        ("zugzahl",tr,"Zugzahl N · GTFS-Halte, 500-m-Blöcke","trains"),
+        ("haltezeit",dw,"Zuschlag auf jeden GTFS-Stationshalt [s] · N=36","dwell")]:
+        f,ax = plt.subplots(figsize=(7.6,3.8),layout="constrained")
+        parameter_plot(ax,series,label,role,qmax,waitmax)
+        f.savefig(FIG/f"{name}.png",dpi=200); f.savefig(FIG/f"{name}.pdf"); plt.close(f)
+    f,ax = plt.subplots(figsize=(7.6,3.8),layout="constrained")
+    speed_plot(ax,speed)
+    f.savefig(FIG/"geschwindigkeitsgrenze.png",dpi=200)
+    f.savefig(FIG/"geschwindigkeitsgrenze.pdf"); plt.close(f)
+    f,ax = plt.subplots(figsize=(10,6.2),layout="constrained")
+    spacetime(ax,data["spaceTime"])
+    f.savefig(FIG/"raumzeit.png",dpi=200); f.savefig(FIG/"raumzeit.pdf"); plt.close(f)
 
-    for name, data, key, label in [
-        ("zugzahl", tr, "train_count", "Zugzahl N (GTFS-Halte unverändert)"),
-        ("haltezeit", dw, "mean_dwell_s", "Einheitliche Haltezeit je Station [s] (N = 36)")]:
-        f, ax = plt.subplots(figsize=(7.6, 3.7), layout="constrained")
-        parameter_plot(ax, data, key, label)
-        f.savefig(FIG / f"{name}.png", dpi=200)
-        f.savefig(FIG / f"{name}.pdf")
-        plt.close(f)
-    f, ax = plt.subplots(figsize=(10, 6.2), layout="constrained")
-    spacetime(ax, trace)
-    f.savefig(FIG / "raumzeit.png", dpi=200)
-    f.savefig(FIG / "raumzeit.pdf")
-    plt.close(f)
-
-    valid = [r for r in val if r["stage"] == "kalibriert"]
-    worst = max(valid, key=lambda r: abs(float(r["error_s"])))
-    conclusions = (
-        f"Der Durchsatz steigt von {fmt(float(first['throughput_trains_per_h']))} Zügen/h bei N={first['train_count']} "
-        f"bis maximal {fmt(float(peak['throughput_trains_per_h']))} Zügen/h bei N={peak['train_count']}. "
-        f"Bei N={last['train_count']} werden {fmt(float(last['throughput_trains_per_h']))} Züge/h und "
-        f"{fmt(float(last['blocked_s_per_train_h']))} s blockierter Stillstand je Zug und Stunde gemessen. "
-        "Ab N=36 liegt die Zugfolge bei 112 s (32,14 Züge/h). Unterschiede um einen Zählwert entsprechen "
-        "0,33 Zügen/h; mehr Züge vergrößern hier vor allem Rückstaus."
-    )
-    dwell_conclusion = (
-        f"Bei N=36 verändert eine Erhöhung der einheitlichen Haltezeit von {dw[0]['mean_dwell_s']} auf "
-        f"{dw[-1]['mean_dwell_s']} s den Durchsatz von {fmt(float(dw[0]['throughput_trains_per_h']))} auf "
-        f"{fmt(float(dw[-1]['throughput_trains_per_h']))} Züge/h. "
-        "Längere Halte erhöhen die freie Umlaufzeit um 27 s je zusätzlicher Haltsekunde. "
-        "Hier bleibt der blockierte Stillstand durchweg null. Bei ähnlichem Mittelwert liefert das gleichmäßige "
-        "34-s-Profil 35,33 Züge/h, das GTFS-Profil 32,00: Auch die Stationsverteilung der Halte ist entscheidend."
-    )
-    limits = (
-        "Die effektive Geschwindigkeitsgrenze bündelt unbekannte örtliche Limits und Fahrplanreserven. "
-        "Sie ist keine gemessene Fahrzeughöchstgeschwindigkeit. Ein guter Umlaufwert allein bestätigt die lokalen Fahrzeiten nicht. "
-        "Ideale Haltepunkte, identische Fahrzeuge, konstante Beschleunigung und modellhafte 500-m-Blöcke erklären weitere Unterschiede. "
-        "Die Ergebnisse gelten für diesen deterministischen Modellbereich und das endliche Messfenster; sie bestimmen keine reale Streckenkapazität."
-    )
-
-    with PdfPages(OUT / "Ausarbeitung_SBahn2.pdf", metadata={
-        "Title": "S-Bahn-Ring: Kalibrierung und Parameterstudien", "Author": "Laboraufgabe Woche 2",
-        "Subject": "Aufgaben aus SBahn2.pdf, auf Grundlage des MATLAB-Modells aus Woche 1"}) as pdf:
-        f = page(1, "Aufgabe 1 · Referenzabgleich und aktualisierte Parameter")
-        y = heading(f, .89, "Versuchsplan und Modellgrundlage")
-        y = paragraph(f, y, "Der MATLAB-Modellkern aus Woche 1 wird als +sbahn2 weiterverwendet und um eine effektive "
-                      "Geschwindigkeitsgrenze sowie den Datenpfad ergänzt. Der Referenzabgleich verwendet einen freien Zug. "
-                      "Vorab festgelegt: Kalibrierung auf Abfahrt Beusselstraße bis Rückkehrankunft; Prüfung an den 27 reinen "
-                      "Abschnittsfahrzeiten (Abfahrt bis nächste Ankunft). Nur die erste Größe wird optimiert.")
-        cells = [
-            ["Strecke / Raster", f"S41, {fmt(p['lengthMeters']/1000,3)} km; Δx = 1 m, Δt = 1 s"],
-            ["Züge / Zugkörper", "Ausgangsfall N = 12; Länge 148 m"],
-            ["Geschwindigkeit vorher → nachher", "79,2 → 57,6 km/h (22 → 16 m/s); Sicherheitsgrenze 80 km/h"],
-            ["Beschleunigung / Bremsen", "höchstens ±1 m/s²; diskreter Bremsweg B(v)=v(v+1)/2"],
-            ["Geplante Stationshalte", f"GTFS-Mediane: {fmt(p['dwellMeanSeconds'],2)} s im Mittel; 30–48 s; Summe 912 s"],
-            ["Blocksteuerung", f"{p['blockCount']} gleichmäßige Modellblöcke zu 499–500 m; Freigabe am Zugende"],
-            ["Messung / Zufall", "60 min Einschwingen + 180 min Messung; keine Zufallsstörungen"],
+    ref = rows("referenzvergleich.csv"); before,after = ref
+    chosen = index(speed,"bestIndex")
+    train_text = (f"Die Untersuchung beginnt bei N={int(p['baseTrainCount'])} (grüner Stern) und umfasst "
+                  f"{len(vector(tr,'x'))} Zugzahlen. Bei N={int(tr['x'][common])} werden "
+                  f"{fmt(tr['throughput'][common])} Züge/h und {fmt(tr['blockedSecondsPerTrainHour'][common])} "
+                  "s Stillstand je Zug und Stunde gemessen. Ab hier erhöhen weitere Züge vor allem die Wartezeit.")
+    dwell_text = (f"Sechs Profile: GTFS plus 0, 6, 12, 18, 24 oder 30 s je Station, durchgehend N={int(dw['trainCount'])}. "
+                  f"GTFS+0 stimmt exakt mit N={int(tr['x'][common])} aus der ersten Grafik überein (violette Rauten). "
+                  f"GTFS+{fmt(dw['x'][-1],0)} liefert {fmt(dw['throughput'][-1])} Züge/h und "
+                  f"{fmt(dw['blockedSecondsPerTrainHour'][-1])} s Stillstand je Zug und Stunde.")
+    with PdfPages(OUT/"Ausarbeitung_SBahn2.pdf",metadata={"Title":"S-Bahn-Ring: Kalibrierung und Parameterstudien"}) as pdf:
+        f=page(1,"Aufgabe 1 · Parameter und optimale Geschwindigkeitsgrenze")
+        paragraph(f,.89,"Der Modellkern aus Woche 1 wird als +sbahn2 verwendet. Vorab gewählte Größen: "
+                  "Abfahrt Beusselstraße bis Rückkehrankunft zur Kalibrierung und 27 reine Abschnittsfahrzeiten "
+                  "zur anschließenden Prüfung. Ein freier Zug; alle Kandidaten werden tatsächlich simuliert.")
+        cells=[
+            ["Strecke / Raster / Zugkörper",f"S41, {fmt(p['lengthMeters']/1000,3)} km; 1 m / 1 s; 148 m"],
+            ["Ausgangsfall / Geschwindigkeit",f"N={int(p['baseTrainCount'])}; {fmt(p['cruiseSpeedKmhBefore'])} → {fmt(p['cruiseSpeedKmhAfter'])} km/h"],
+            ["Dynamik / Blöcke",f"±1 m/s²; {int(p['blockCount'])} Modellblöcke zu {int(p['blockMinMeters'])}–{int(p['blockMaxMeters'])} m"],
+            ["GTFS-Halte / Zuschlagsstudie",f"{fmt(p['dwellMinSeconds'],0)}–{fmt(p['dwellMaxSeconds'],0)} s; je Station zusätzlich 0–30 s"],
+            ["Messung / Zufall",f"{fmt(p['warmupSeconds']/60,0)} min Einschwingen + {fmt(p['measurementSeconds']/60,0)} min Messung; deterministisch"],
         ]
-        table_on(f, [.075, .548, .85, .222], cells, ["Parameter", "Tatsächlich verwendeter Wert"], [.32, .68], 8.1)
-        y = heading(f, .535, "Kalibrierung und Prüfung")
-        comp = [
-            ["Abfahrt → Rückkehr [s]", "3558", before["model_departure_return_s"], after["model_departure_return_s"]],
-            ["Relativer Fehler [%]", "0", fmt(float(before["error_percent"]),2), fmt(float(after["error_percent"]),2)],
-            ["Abschnitts-MAE / RMSE [s]", "0 / 0", f"{fmt(float(before['segment_mae_s']))} / {fmt(float(before['segment_rmse_s']))}",
-             f"{fmt(float(after['segment_mae_s']))} / {fmt(float(after['segment_rmse_s']))}"],
-        ]
-        table_on(f, [.075, .395, .85, .102], comp, ["Vergleichsgröße", "GTFS", "Vorher", "Kalibriert"], [.40,.16,.22,.22], 8.5)
-        y = paragraph(f, .378, "Getestet werden alle ganzzahligen Geschwindigkeitsstufen 14–22 m/s. Das Minimum des absoluten "
-                      f"Umlauffehlers liegt bei 16 m/s: 3599 statt 3558 s, also +41 s (+{fmt(float(after['error_percent']),2)} %). "
-                      "Die Definition ist entscheidend: Der modellierte volle Umlauf beträgt 3641 s; der 42-s-Halt an der "
-                      "Startstation gehört nicht zur Referenz von Abfahrt bis Rückkehrankunft.")
-        y = paragraph(f, y, f"Die Abschnittsprüfung wird nicht zur Anpassung verwendet. Die größte Abweichung beträgt "
-                      f"{fmt(float(worst['error_s']),0)} s auf {worst['from_station']} → {worst['to_station']}. "
-                      "Die zweite Größe stammt aus demselben Fahrplan: Sie prüft die zeitliche Verteilung, ist aber keine "
-                      "unabhängige Messkampagne. GTFS beschreibt Sollbetrieb, keine Ist-Fahrten.")
-        y = heading(f, y-.004, "Referenz und Herkunft")
-        paragraph(f, y, "VBB-GTFS, 14.10.2026, S41 trip_id 308542990: 08:03:24–09:02:42; 26 innere Halte, "
-                  "Summe 870 s. Anfangs-/Endhalte sind unbekannt und werden nicht als Nullhalte verwendet. "
-                  "Geometrie: OpenStreetMap, Relation 14981, 36 971,599 m, auf 36 972 m gerundet. "
-                  "Quellen, Lizenzen und Rohdaten: ../Woche 1/NaSch-SBahn/daten/ringbahn_2026-10-14/README.md "
-                  "(VBB CC BY 4.0; © OpenStreetMap contributors, ODbL).", size=8.2, width=115)
-        f.savefig(FIG / 'bericht_seite_1.png', dpi=130)
-        pdf.savefig(f); plt.close(f)
+        table_on(f,[.075,.665,.85,.145],cells,["Parameter","Wert"],[.35,.65])
+        ax=f.add_axes([.105,.355,.74,.245]); speed_plot(ax,speed)
+        ax.set_title("Geschwindigkeitsstudie: kleinster Fehler gegenüber dem Fahrplan",fontsize=9.5)
+        table_on(f,[.075,.202,.85,.08],[
+            ["Abfahrt → Rückkehr [s]",before['reference_s'],before['model_departure_return_s'],after['model_departure_return_s']],
+            ["Abschnitts-MAE / RMSE [s]","0 / 0",f"{fmt(before['segment_mae_s'])} / {fmt(before['segment_rmse_s'])}",
+             f"{fmt(after['segment_mae_s'])} / {fmt(after['segment_rmse_s'])}"]],
+            ["Vergleich","GTFS","Vorher","Kalibriert"],[.39,.16,.225,.225],8)
+        y=paragraph(f,.183,f"Das Minimum liegt bei {fmt(speed['xKmh'][chosen])} km/h: "
+                    f"{fmt(speed['modelSeconds'][chosen],0)} statt {fmt(speed['referenceSeconds'][chosen],0)} s "
+                    f"(Fehler {fmt(speed['absoluteErrorSeconds'][chosen],0)} s, {fmt(after['error_percent'],2)} %). "
+                    f"Der volle Modellumlauf beträgt {fmt(p['freeArrivalLapSeconds'],0)} s; der Halt an der Startstation "
+                    "wird für den Referenzvergleich abgezogen. Die Abschnittsprüfung wird nicht nachoptimiert.")
+        paragraph(f,y,"Referenz: VBB-GTFS, S41 trip_id 308542990, 14.10.2026. Sollzeiten, keine Ist-Messungen. "
+                  "Geometrie: © OpenStreetMap contributors, Relation 14981. Quellen und Lizenzen im Daten-README "
+                  "unter Woche 1/NaSch-SBahn/daten/ringbahn_2026-10-14 (VBB CC BY 4.0; OSM ODbL).",size=7.7,width=122)
+        finish_page(pdf,f,1)
 
-        f = page(2, "Aufgabe 2 · Zugzahl und mittlere Haltezeit")
-        paragraph(f, .89, "Durchsatz Q = Abfahrten an Station 1 / Messdauer in Stunden, gezählt im Intervall [3600,14400) s. "
-                  "Stillstand zählt ausschließlich verkehrsbedingtes Warten nach Ende des Stationshalts; langsames Folgen "
-                  "wird nicht als Stillstand gezählt. Alle Läufe sind deterministisch, deshalb ein Lauf pro Einstellung.")
-        ax = f.add_axes([.105,.567,.74,.245])
-        parameter_plot(ax,tr,"train_count","Zugzahl N · GTFS-Halte, 500-m-Blöcke")
-        ax.set_title("Zugzahlstudie: zehn Werte um den Ausgangsfall N=12", fontsize=10)
-        paragraph(f,.51,conclusions,size=8.7,width=110)
-        ax = f.add_axes([.105,.205,.74,.23])
-        parameter_plot(ax,dw,"mean_dwell_s","Einheitliche Haltezeit je Station [s] · N=36")
-        ax.set_title("Haltezeitstudie: acht Werte bei fester Zugzahl", fontsize=10)
-        y = paragraph(f,.147,dwell_conclusion,size=8.5,width=112)
-        paragraph(f,y,"Die zweite Studie variiert einheitliche Halte bei N=36; die erste verwendet GTFS-Stationshalte. "
-                  "Null blockierter Stillstand schließt langsames Folgen nicht aus. Unterschiede von einem Detektorereignis "
-                  "entsprechen 0,33 Zügen/h. Ohne Zufallseinflüsse sind zehn Wiederholungen nicht erforderlich.",size=8.0,width=119)
-        f.savefig(FIG / 'bericht_seite_2.png', dpi=130)
-        pdf.savefig(f); plt.close(f)
+        f=page(2,"Aufgabe 2 · Vergleichbare Studien zu Zugzahl und Stationshalten")
+        paragraph(f,.89,"Gleiche Strecke, Geschwindigkeit, Blöcke und Achsenskalierungen. Q zählt Abfahrten an Station 1 "
+                  "im Messfenster. Kleine Abweichungen zur freien Kurve entstehen durch die endliche Zählung. "
+                  "Blockierter Stillstand enthält weder Stationshalte noch langsames Folgen.")
+        ax=f.add_axes([.105,.58,.74,.23]); parameter_plot(ax,tr,"Zugzahl N · unverändertes GTFS-Profil","trains",qmax,waitmax)
+        ax.set_title("Zugzahlstudie beginnt beim Ausgangsfall N=12",fontsize=10)
+        paragraph(f,.525,train_text,size=8.5)
+        ax=f.add_axes([.105,.22,.74,.23]); parameter_plot(ax,dw,"Zuschlag je GTFS-Stationshalt [s] · N=36","dwell",qmax,waitmax)
+        ax.set_title("Haltezeitstudie: GTFS-Profil + regelmäßiger Zuschlag",fontsize=10)
+        y=paragraph(f,.164,dwell_text,size=8.5)
+        paragraph(f,y,"Das Stationsprofil bleibt erhalten. Für gültige Startbelegungen wird nötigenfalls die kleinste "
+                  "gemeinsame Verschiebung der freien Zeitphasen gesucht; Zugzahl und Blöcke bleiben gleich. "
+                  "Der identische Nullzuschlagsfall ist bitgenau geprüft.",size=8.0,width=119)
+        finish_page(pdf,f,2)
 
-        f = page(3, "Aufgabe 2 · Rückstaus, Sanity Checks und Fazit")
-        paragraph(f,.89,"Raum-Zeit-Diagramm: N=40, GTFS-Halte, 500-m-Blöcke; Ausschnitt Minute 180–210 des Laufs. "
-                  "Senkrechte Trajektorien zeigen Stillstand. Orange markiert verkehrsbedingte Rückstaus; die "
-                  "gepunkteten Linien und Stationsnummern zeigen die Haltepunkte. Ringsprünge werden unterbrochen.")
-        ax = f.add_axes([.105,.48,.79,.315])
-        spacetime(ax,trace)
-        y = heading(f,.425,"Prüfung der grundlegenden Regeln")
-        y = paragraph(f,y,f"Alle {len(checks)} Läufe bestehen zwölf zusätzliche Sanity Checks: Zugerhaltung, Ringpositionen, "
-                      "Geschwindigkeit, Beschleunigung, synchrone Bewegung, Kollisionsfreiheit, Stationshalt, Bremsreserve, "
-                      "Stationsbedienung und unabhängiger Detektor. Die Modellprüfungen kontrollieren auch exklusive "
-                      f"Blockbelegung und Mindesthalte. Alle {len(tests)} MATLAB-Tests bestehen, einschließlich zweier "
-                      "Vergleiche der Grunddynamik mit Woche 1.",size=8.5,width=114)
-        y = heading(f,y-.004,"Begründetes Fazit und Grenzen")
-        y = paragraph(f,y,"Zusätzliche Züge erhöhen zunächst den Durchsatz, ab N=36 überwiegend die Wartezeit. "
-                      "Längere Halte verlängern die Umlaufzeit; ihr Stationsprofil beeinflusst Rückstaus. Die effektive "
-                      "Geschwindigkeitsgrenze bündelt örtliche Limits und Fahrplanreserven und ist keine gemessene Fahrzeuggrenze. "
-                      "Ideale Haltepunkte, identische Züge, konstante Beschleunigung und modellhafte Blöcke erklären verbleibende "
-                      "Abweichungen. Das endliche, deterministische Messfenster beschreibt keine reale Streckenkapazität. "
-                      "Ein guter Umlaufwert ersetzt die lokale Fahrzeitprüfung nicht.",size=8.5,width=114)
-        y = heading(f,y-.003,"Änderungen, KI-Einsatz und Reproduktion")
-        paragraph(f,y,"KI (Codex) unterstützte Codeübernahme, Geschwindigkeitsparametrisierung, Versuchsauswertung und "
-                  "Bericht. Zahlen stammen aus ausgeführten MATLAB-Läufen; Regeln wurden durch Sanity Checks, "
-                  "Regressionen und Modelltests geprüft. Start: SBahn2.m; Bericht: py tools/erstelle_bericht.py. "
-                  "CSV/JSON, vollständige Laufdaten, Testprotokolle und Diagramme liegen unter ergebnisse/.",size=8.0,width=120)
-        f.savefig(FIG / 'bericht_seite_3.png', dpi=130)
-        pdf.savefig(f); plt.close(f)
+        f=page(3,"Raum-Zeit-Diagramm · Zahlenprüfung und Fazit")
+        st=data['spaceTime']
+        paragraph(f,.89,f"N={int(st['trainCount'])}, unveränderte GTFS-Halte; Ausschnitt ab Minute {fmt(st['startMinute'],0)} "
+                  f"für {fmt(st['durationMinutes'],0)} Minuten. Orange: verkehrsbedingt blockiert. "
+                  "Gepunktete Linien und Nummern markieren die Stationen; Ringsprünge sind unterbrochen.")
+        ax=f.add_axes([.105,.49,.79,.315]); spacetime(ax,st)
+        y=paragraph(f,.435,"Zahlenweg und Prüfung",size=11)
+        checked_values=sum(int(r['checked_numeric_values']) for r in audit)
+        y=paragraph(f,y,f"MATLAB gibt alle Kurvenwerte direkt als results.plotData zurück und speichert sie in "
+                    f"diagrammdaten.mat. Python zeichnet diese Vektoren unverändert. {len(audit)} Läufe und "
+                    f"{checked_values} Zahlenwerte wurden aus Positionen, Halteuhren und Ereignissen erneut geprüft. "
+                    f"Alle {len(tests)} MATLAB-Tests und zwölf Sanity-Check-Gruppen je Lauf bestehen. Die tatsächlichen "
+                    "Linienkoordinaten werden auch beim Zeichnen gegen die MATLAB-Vektoren geprüft.")
+        y=paragraph(f,y,"Fazit und Grenzen",size=11)
+        y=paragraph(f,y,"Mehr Züge steigern zunächst den Durchsatz; im dichten Bereich wächst vor allem die Wartezeit. "
+                    "Die Haltezeitstudie verändert jetzt ausschließlich den Zuschlag zum gleichen GTFS-Profil. "
+                    "Die effektive Geschwindigkeitsgrenze bündelt örtliche Limits und Fahrplanreserven. Ideale Haltepunkte, "
+                    "identische Züge und vereinfachte Blocklogik begrenzen die Übertragbarkeit auf den realen Betrieb.")
+        y=paragraph(f,y,"Reproduktion und KI-Einsatz",size=11)
+        paragraph(f,y,"SBahn2.m führt Tests, Studien, Zahlenprüfung und Berichterzeugung aus. CSV/JSON, vollständige "
+                  "MAT-Läufe und Diagramme liegen in ergebnisse/. laufverzeichnis.csv definiert die aktuellen Läufe. "
+                  "Codex unterstützte Codeänderungen, Prüfung, Auswertung und Text; alle Ergebnisse wurden in MATLAB berechnet.",size=8.0,width=119)
+        finish_page(pdf,f,3)
 
-    markdown = f"""# S-Bahn-Ring – Woche 2
+    markdown=f"""# S-Bahn-Ring – Woche 2
 
-## Aufgabe 1: Referenzabgleich
+## Datenweg und Versuchskonvention
 
-Vor der Anpassung gewählte Größen: Abfahrt Beusselstraße bis Rückkehrankunft (Kalibrierung) und die 27 reinen Abschnittsfahrzeiten (Prüfung). Die GTFS-Referenz beträgt 3558 s, Fahrt S41 `308542990` am 14.10.2026 von 08:03:24 bis 09:02:42. Es handelt sich um Sollbetrieb.
+`run_sbahn2` gibt die tatsächlich berechneten Zahlen als `results.plotData` zurück und schreibt sie nach `diagrammdaten.mat`. Python liest diese Zahlen direkt ein und prüft auch die gezeichneten Linienkoordinaten. Alle aktuellen Läufe stehen in `laufverzeichnis.csv`; `diagrammwerte_pruefung.csv` dokumentiert die unabhängige Zahlenprüfung. Es werden keine Kurvenwerte von Hand im Zeichenskript eingetragen.
 
-Die effektive Geschwindigkeitsgrenze wird in allen zulässigen ganzzahligen Stufen 14–22 m/s untersucht; alle anderen Parameter bleiben unverändert. Das kleinste absolute Residuum ergibt sich bei 16 m/s = 57,6 km/h: 3599 s (+41 s, +{fmt(float(after['error_percent']),2)} %). Vorher: 3131 s. Der volle Modellumlauf beträgt 3641 s; der Anfangshalt von 42 s wird zum Vergleich abgezogen. Die Innenhalte ergeben genau die 870 s der Referenz. Endpunkte werden nicht als Nullhalte behandelt.
+## Aufgabe 1: Geschwindigkeitsgrenze
 
-Abschnittsvalidierung: MAE vorher {fmt(float(before['segment_mae_s']))} s, nachher {fmt(float(after['segment_mae_s']))} s; RMSE vorher {fmt(float(before['segment_rmse_s']))} s, nachher {fmt(float(after['segment_rmse_s']))} s. Keine Nachoptimierung auf diese Werte. Prüfung und Kalibrierung verwenden denselben Fahrplan, keine unabhängigen Ist-Messungen.
+![Geschwindigkeitsgrenze](diagramme/geschwindigkeitsgrenze.png)
 
-## Aufgabe 2: Parameterstudien
+Neun vollständig simulierte Kandidaten; ein freier Zug. Kleinster absoluter Fehler bei {fmt(speed['xKmh'][chosen])} km/h: {fmt(speed['modelSeconds'][chosen],0)} statt {fmt(speed['referenceSeconds'][chosen],0)} s. Vorher: {before['model_departure_return_s']} s bei {fmt(before['speed_kmh'])} km/h. Kalibriert wird Abfahrt bis Rückkehrankunft; die 27 reinen Abschnittsfahrzeiten dienen anschließend zur Prüfung. Die Grenze ist ein effektiver Modellparameter, keine Messung der Fahrzeughöchstgeschwindigkeit.
 
-{conclusions}
+## Aufgabe 2: Zugzahl
 
 ![Zugzahlstudie](diagramme/zugzahl.png)
 
-{dwell_conclusion}
+{train_text}
 
-![Haltezeitstudie](diagramme/haltezeit.png)
+## Aufgabe 2: Haltezeit
 
-Bei der Zugzahlstudie bleiben die GTFS-Halte unverändert; bei der Haltezeitstudie sind alle Halte je Lauf gleich und N=36 bleibt fest. Zehn Zugzahlen und acht Haltezeiten, jeweils 60 min Einschwingen und 180 min Messung. Q ist die Zahl der Abfahrten an Station 1 im Intervall [3600,14400) geteilt durch 3 h. Blockierter Stillstand schließt geplante Stationshalte und langsames Folgen aus. Keine Zufallseinflüsse, deshalb ein deterministischer Lauf pro Parametersatz; `headway_std_s` ist die Streuung der beobachteten Zugabstände, keine Wiederholungsstreuung.
+![GTFS-Halte plus Zuschlag](diagramme/haltezeit.png)
+
+{dwell_text}
+
+Es gelten jeweils dieselben GTFS-Stationsmediane plus Zuschlag. Der Nullzuschlag bei N=36 ist hinsichtlich vollständiger Trajektorien und Kennzahlen bitgenau identisch zum N=36-Fall der Zugzahlstudie. Die Phasenverschiebungen der sechs Anfangszustände betragen {', '.join(fmt(v,0) for v in vector(dw,'initialPhaseShiftSeconds'))} s; die regelmäßigen zeitlichen Zugabstände werden dabei erhalten. Die kleinste gültige Verschiebung verhindert bereits zu Beginn gemeinsam belegte Blöcke.
+
+## Raum-Zeit-Diagramm
 
 ![Raum-Zeit-Diagramm](diagramme/raumzeit.png)
 
-## Sanity Checks und Grenzen
+## Kennzahlen und Prüfungen
 
-{len(checks)} Läufe mit jeweils zwölf zusätzlichen Sanity Checks; {len(tests)} MATLAB-Tests bestanden. Grundregeln: Zugerhaltung, ganzzahlige Ringzustände, zulässige Geschwindigkeiten/Beschleunigungen, korrekte synchrone Ringbewegung, Kollisionsfreiheit, Stationshalt, Bremsreserve und unabhängig rekonstruierter Abfahrtsdetektor. Die Modellprüfungen aus Woche 1 kontrollieren außerdem Stationsreihenfolge, Mindesthalte und exklusive Blockbelegung samt Freigabe am Zugende. Zwei Regressionen vergleichen On/Off und Fahrdynamik bei Standardgeschwindigkeit mit dem Original aus Woche 1. `sanity_checks.csv` und `matlab_tests.csv` enthalten die Ergebnisse.
+Je Lauf {fmt(p['warmupSeconds']/60,0)} Minuten Einschwingen und {fmt(p['measurementSeconds']/60,0)} Minuten Messung. Durchsatz: gezählte Abfahrten an Station 1 geteilt durch die Messdauer in Stunden. Stillstand: tatsächliche bewegungslose Sekunden ohne laufenden Stationshalt, normiert auf Zug und Stunde. Die gemeinsame Achsenskalierung macht beide Parameterdiagramme vergleichbar. Ohne Zufallseinflüsse genügt ein deterministischer Lauf je Einstellung.
 
-{limits}
+{len(tests)} MATLAB-Tests, {len(audit)} ausgewertete Läufe und {checked_values} unabhängig geprüfte Zahlenwerte. Grundregeln, vollständige Tabellenexporte, gemessene Referenzfahrzeiten, gemeinsamer Betriebspunkt und optimale Geschwindigkeitsmarkierung sind geprüft. `headway_std_s` beschreibt zeitliche Zugabstände, keine Wiederholungsstreuung.
 
-## Code, Quellen und KI-Einsatz
+## Quellen, Grenzen und KI
 
-Modellkern aus `../Woche 1/NaSch-SBahn/+sbahn` als lokales Paket `modell/+sbahn2`; die vier Bewegungsschritte und Blockregeln bleiben erhalten. Geändert wurden konfigurierbare effektive Geschwindigkeitsgrenze und Datenpfad. Quelldaten werden direkt aus Woche 1 gelesen. Das Original bleibt unverändert. `quellcode_herkunft.json` dokumentiert Hashes und betroffene Dateien.
-
-VBB-GTFS, CC BY 4.0: https://unternehmen.vbb.de/digitale-services/datensaetze/ ; Gleisgeometrie © OpenStreetMap contributors, ODbL: https://www.openstreetmap.org/relation/14981 . Dokumentierter Abruf 14.10.2026; Herkunft, Rohdaten, Lizenzen und Geometriegrenzen im Daten-README aus Woche 1.
-
-Codex unterstützte Übernahme und Erweiterung des MATLAB-Codes, Versuchsauswertung, Prüfungen und Text. Ergebnisse wurden in MATLAB R2026a ausgeführt, nicht aus Referenzwerten erfunden. Reproduktion: `SBahn2.m`, anschließend `py tools/erstelle_bericht.py`; vollständige Daten unter `ergebnisse/laeufe/`.
+VBB-GTFS: S41 trip_id 308542990 am 14.10.2026; Sollzeiten. Kartierte Geometrie: © OpenStreetMap contributors, Relation 14981. Quellen und Lizenzen im Daten-README aus Woche 1. Ideale Haltepunkte, identische Fahrzeuge, vereinfachte Blöcke und effektive Geschwindigkeitsgrenze begrenzen die Aussage über reale Streckenkapazität. Codex unterstützte Implementierung, Versuchsprüfung und Text. Alle Zahlen stammen aus ausgeführten MATLAB-Läufen.
 """
-    (OUT / "Ausarbeitung_SBahn2.md").write_text(markdown, encoding="utf-8")
-    origin = ROOT.parent / "Woche 1" / "NaSch-SBahn" / "+sbahn"
-    manifest = []
-    for src in sorted(origin.rglob("*.m")):
-        rel = src.relative_to(origin)
-        dest = ROOT / "modell" / "+sbahn2" / rel
-        original = src.read_text(encoding="utf-8-sig")
-        local = dest.read_text(encoding="utf-8-sig")
-        manifest.append({"file": rel.as_posix(), "source_sha256": hashlib.sha256(src.read_bytes()).hexdigest(),
-                         "local_sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
-                         "changed_beyond_namespace": original.replace("sbahn.", "sbahn2.") != local})
-    (OUT / "quellcode_herkunft.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"Bericht (3 Seiten): {OUT / 'Ausarbeitung_SBahn2.pdf'}")
-    print(f"MATLAB-Tests bestanden: {len(tests)}; geprüfte Auswertungsläufe: {len(checks)}")
+    (OUT/'Ausarbeitung_SBahn2.md').write_text(markdown,encoding='utf-8')
+    origin=ROOT.parent/'Woche 1'/'NaSch-SBahn'/'+sbahn'
+    manifest=[]
+    local_model=ROOT/'modell'/'+sbahn2'
+    # Woche 1 darf zusätzliche UI-Helfer erhalten, die nicht zu +sbahn2 gehören.
+    for dest in sorted(local_model.rglob('*.m')):
+        rel=dest.relative_to(local_model); src=origin/rel
+        manifest.append({'file':rel.as_posix(),'source_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),
+                         'local_sha256':hashlib.sha256(dest.read_bytes()).hexdigest(),
+                         'changed_beyond_namespace':src.read_text(encoding='utf-8-sig').replace('sbahn.','sbahn2.') != dest.read_text(encoding='utf-8-sig')})
+    (OUT/'quellcode_herkunft.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False),encoding='utf-8')
+    print(f"Vier Diagramme und Bericht (3 Seiten): {OUT/'Ausarbeitung_SBahn2.pdf'}")
+    print(f"Tests: {len(tests)}; gepruefte Laeufe: {len(audit)}; Zahlenwerte: {checked_values}")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

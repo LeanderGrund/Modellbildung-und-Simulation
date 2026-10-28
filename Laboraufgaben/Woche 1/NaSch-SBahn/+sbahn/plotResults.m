@@ -41,23 +41,26 @@ end
 set(ax1,'YDir','reverse');
 xlim(ax1,[0 p.route.lengthMeters/1000]);
 ylim(ax1,[0 G.timeSeconds(end)/60]);
-xlabel(ax1,'Position auf dem Ring [km]');
-ylabel(ax1,'Zeit [min]');
-title(ax1,sprintf('%g Züge: Fahrt und Stationshalte',p.trainCount));
+xlabel(ax1,'Position auf dem Ring [km]','Color','k');
+ylabel(ax1,'Zeit [min]','Color','k');
+title(ax1,sprintf('%g Züge: Fahrt und Stationshalte',p.trainCount),'Color','k');
 grid(ax1,'on');
 ax2 = nexttile;
 meanSpeed = mean(G.velocity,2)*p.speedUnitKmh;
 plot(ax2,meanSpeed,G.timeSeconds/60,'LineWidth',1.2);
 hold(ax2,'on');
 xline(ax2,p.averageSpeedKmh,'--','Umlaufmittel', ...
-    'LabelOrientation','aligned');
+    'LabelOrientation','aligned','Color','k');
 set(ax2,'YDir','reverse');
 xlim(ax2,[0 p.driveSpeedKmh*1.1]);
-xlabel(ax2,'Geschwindigkeit [km/h]');
-title(ax2,'Mittel über alle Züge');
+xlabel(ax2,'Geschwindigkeit [km/h]','Color','k');
+title(ax2,'Mittel über alle Züge','Color','k');
 grid(ax2,'on');
 linkaxes([ax1 ax2],'y');
 sgtitle(sprintf('%g km | %g Stationen | Halt %g–%g s | v_{max} = %.2f km/h', ...
     p.route.lengthMeters/1000,p.stationCount,min(p.stationDwellSeconds), ...
-    max(p.stationDwellSeconds),p.driveSpeedKmh));
+    max(p.stationDwellSeconds),p.driveSpeedKmh),'Color','k');
+% plot setzt bei der ersten Kurve Achseneigenschaften zurück. Deshalb
+% Schrift-/Hintergrundfarben erst nach allen Zeichenaufrufen festlegen.
+set([ax1 ax2],'Color','w','XColor','k','YColor','k');
 end

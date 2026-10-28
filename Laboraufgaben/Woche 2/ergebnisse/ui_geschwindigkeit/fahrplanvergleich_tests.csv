@@ -1,0 +1,4 @@
+Name,Passed,Failed,Incomplete,Duration,Details
+TimetableComparisonTest/completeFreeTripsHaveKnownError,1,0,0,3.9443286,
+TimetableComparisonTest/partialTripIsNotReportedAsMeasured,1,0,0,0.4509898,
+TimetableComparisonTest/idealRingHasNoMatchingGtfsReference,1,0,0,0.2021018,

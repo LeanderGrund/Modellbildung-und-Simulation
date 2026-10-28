@@ -18,7 +18,7 @@ ergebnisse = run_sbahn2;
 addpath(fullfile(projekt,'tools'));
 pruefe_ergebnisse;
 
-%% Geforderte Diagramme und dreiseitige Ausarbeitung erzeugen
+%% Vier Diagramme aus den MATLAB-Zahlen und dreiseitige Ausarbeitung erzeugen
 % Benötigt Python mit numpy, scipy und matplotlib.
 % Alternativ im Terminal: py tools/erstelle_bericht.py
 berichtSkript = fullfile(projekt,'tools','erstelle_bericht.py');

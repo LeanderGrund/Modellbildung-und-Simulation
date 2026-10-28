@@ -35,19 +35,33 @@ model.expectedLapSeconds = step*model.stepSeconds;
 model.expectedHeadwaySeconds = model.expectedLapSeconds/model.trainCount;
 model.averageSpeedKmh = 3.6*model.route.lengthMeters/model.expectedLapSeconds;
 phase = floor((0:model.trainCount-1)*step/model.trainCount)+1;
-state = emptyState(model.trainCount,model.stationCount);
-for field = fields
-    state.(field) = reference.(field)(phase);
+maximumShift = double(model.config.initialPhaseSearch)*(step-1);
+for shift = 0:maximumShift
+    state = emptyState(model.trainCount,model.stationCount);
+    shifted = mod(phase-1+shift,step)+1;
+    for field = fields
+        state.(field) = reference.(field)(shifted);
+    end
+    try
+        traffic = trafficLimits(state.position,model);
+        if dynamic
+            minimumNext = max(0,state.velocity-1);
+            assert(all(minimumNext.*(minimumNext+1)/2 <= traffic.bodyDistance),'SBahn:InitialBrakingDistance', ...
+                'Zu viele Züge: Die Startzustände haben keine ausreichende Bremsreserve hinter dem Zugende.');
+            state.velocity = min(state.velocity,1+floor((sqrt(1+8*traffic.distance)-1)/2));
+        end
+        model.initialPhaseShiftSeconds = shift*model.stepSeconds;
+        return
+    catch errorInfo
+        recoverable = ismember(string(errorInfo.identifier), ...
+            ["SBahn:TrainOverlap","SBahn:InitialBlockOverlap","SBahn:InitialBrakingDistance"]);
+        if ~model.config.initialPhaseSearch || ~recoverable
+            rethrow(errorInfo);
+        end
+    end
 end
-traffic = trafficLimits(state.position,model);
-if dynamic
-    minimumNext = max(0,state.velocity-1);
-    assert(all(minimumNext.*(minimumNext+1)/2 <= traffic.bodyDistance),'SBahn:InitialBrakingDistance', ...
-        'Zu viele Züge: Die Startzustände haben keine ausreichende Bremsreserve hinter dem Zugende.');
-    % Die Positionen bleiben in allen Blockmodi gleich. Nur eine zu hohe
-    % Startgeschwindigkeit vor einem gesperrten Block wird abgesenkt.
-    state.velocity = min(state.velocity,1+floor((sqrt(1+8*traffic.distance)-1)/2));
-end
+error('SBahn:NoSafeInitialPhase', ...
+    'Keine gemeinsame Verschiebung der freien Zeitphasen ergibt eine zulässige Startbelegung.');
 end
 
 function state = emptyState(trainCount,stationCount)

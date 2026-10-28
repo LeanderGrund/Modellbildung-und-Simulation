@@ -31,7 +31,7 @@ model.maxSpeedKmh = 80;
 dynamic = config.motionModel == "Beschleunigen und Bremsen";
 model.vmax = 1;
 if dynamic
-    model.vmax = floor(model.maxSpeedKmh/3.6*model.stepSeconds/model.dxMeters);
+    model.vmax = floor(config.cruiseSpeedKmh/3.6*model.stepSeconds/model.dxMeters);
 end
 model.accelerationMetersPerSecondSquared = double(dynamic);
 model.brakingMetersPerSecondSquared = double(dynamic);
@@ -65,6 +65,8 @@ end
 
 function validateConfig(config)
 %validateConfig - Sämtliche bedienbaren Einstellungen zentral prüfen
+validateattributes(config.cruiseSpeedKmh,{'numeric'}, ...
+    {'scalar','real','finite','>=',3.6,'<=',80});
 choices = {"trackMode",["Idealisierter Ring","Reale Ringbahn S41"],"SBahn:TrackMode"; ...
     "displayMode",["Schematischer Ring","Geografischer Streckenverlauf"],"SBahn:DisplayMode"; ...
     "dwellMode",["Einheitlich","GTFS-Stationshalte"],"SBahn:DwellMode"; ...

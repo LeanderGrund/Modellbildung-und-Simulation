@@ -20,6 +20,9 @@ c.animate = false;
 c.targetStopEnabled = false;
 c.randomStopEnabled = false;
 c.closureEnabled = false;
+c.initialPhaseSearch = true;
+trainCounts = 12:4:40;
+dwellOffsets = 0:6:30;
 warmup = 3600;
 measurement = 10800;
 c.durationMinutes = (warmup+measurement)/60;
@@ -31,7 +34,10 @@ plan = struct('calibrationMetric','Abfahrt Beusselstrasse bis Rueckkehrankunft [
     'candidateSpeedLevelsMps',14:22,'fixedDwell','GTFS-Stationsmediane 14.10.2026', ...
     'warmupSeconds',warmup,'measurementSeconds',measurement, ...
     'detector','Abfahrten an Station 1 im halboffenen Messintervall [3600,14400)', ...
-    'stochasticInfluences',false,'runsPerSetting',1);
+    'stochasticInfluences',false,'runsPerSetting',1, ...
+    'baseTrainCount',c.trainCount,'trainCounts',trainCounts, ...
+    'dwellStudyTrainCount',36,'dwellOffsetsSeconds',dwellOffsets, ...
+    'initialization','Kleinste gueltige gemeinsame Verschiebung der freien Zeitphasen');
 writeJSON(fullfile(out,'versuchsplan.json'),plan);
 referenceFile = fullfile(c.dataFolder,'processed','s41_example_timetable.csv');
 referenceOptions = detectImportOptions(referenceFile,'TextType','string');
@@ -48,10 +54,16 @@ calConfig = c;
 calConfig.trainCount = 1;
 calConfig.durationMinutes = 130;
 calibration = table();
+sanities = table();
 for speed = plan.candidateSpeedLevelsMps
     calConfig.cruiseSpeedKmh = speed*3.6;
-    [p,~] = sbahn2.prepare(calConfig);
-    prediction = p.expectedLapSeconds-p.stationDwellSeconds(1);
+    name = "geschwindigkeit_"+compose('%02d',speed);
+    fprintf('Geschwindigkeitsstudie: v=%g m/s\n',speed);
+    [G,p,report] = sbahn2.simulate(calConfig);
+    checks = sanity_check(G,p,report);
+    prediction = departureReturnSeconds(p);
+    sanities = [sanities;checkRow(name,checks)]; %#ok<AGROW>
+    save(fullfile(raw,name+".mat"),'G','p','report','checks','-v7');
     calibration = [calibration; table(speed,p.driveSpeedKmh,prediction,target,abs(prediction-target), ...
         'VariableNames',{'speed_mps','speed_kmh','model_departure_return_s', ...
         'reference_departure_return_s','absolute_error_s'})]; %#ok<AGROW>
@@ -61,7 +73,6 @@ c.cruiseSpeedKmh = calibration.speed_kmh(best);
 writetable(calibration,fullfile(out,'kalibrierung.csv'));
 validation = table();
 referenceSummary = table();
-sanities = table();
 for stage = ["vorher","kalibriert"]
     calConfig.cruiseSpeedKmh = 80;
     if stage == "kalibriert", calConfig.cruiseSpeedKmh = c.cruiseSpeedKmh; end
@@ -96,7 +107,7 @@ writetable(validation,fullfile(out,'abschnittsvalidierung.csv'));
 
 %% Aufgabe 2a: Zugzahl; gleiche Strecke, Blöcke und stationsabhängige Halte.
 trainStudy = table();
-for n = [4 8 12 16 20 24 28 32 36 40]
+for n = trainCounts
     config = c; config.trainCount = n;
     name = "zugzahl_"+compose('%02d',n);
     fprintf('Zugzahlstudie: N=%d\n',n);
@@ -115,22 +126,21 @@ for n = [4 8 12 16 20 24 28 32 36 40]
         stationCells = p.route.stationCells;
         stationNames = p.route.stationNames;
         cellCount = p.cellCount;
+        traceModel = p;
         save(fullfile(out,'raumzeit.mat'),'tracePosition','traceVelocity','traceWait', ...
             'traceBlocked','traceTime','stationCells','stationNames','cellCount','-v7');
     end
 end
 writetable(trainStudy,fullfile(out,'zugzahlstudie.csv'));
 
-%% Aufgabe 2b: mittlere Haltezeit; einheitliche Halte isolieren den Mittelwert.
-% N=36 ist aus der ersten Studie als Bereich mit beginnender Sättigung gewählt.
-% Die Uniformität ist ein eigener kontrollierter Versuch: GTFS-Profilvergleich
-% nicht mit einer reinen Änderung des Mittelwerts verwechseln.
+%% Aufgabe 2b: Dasselbe GTFS-Profil plus sechs einheitliche Zuschläge.
+% GTFS+0 bei N=36 muss exakt dem N=36-Lauf der Zugzahlstudie entsprechen.
 dwellStudy = table();
-for h = [15 20 25 30 34 40 50 60]
+for offset = dwellOffsets
     config = c; config.trainCount = 36;
-    config.dwellMode = "Einheitlich"; config.stopSeconds = h;
-    name = "haltezeit_"+compose('%02d',h);
-    fprintf('Haltezeitstudie: h=%d s, N=36\n',h);
+    config.dwellOffsetSeconds = offset;
+    name = "gtfs_plus_"+compose('%02d',offset);
+    fprintf('Haltezeitstudie: GTFS+%d s je Station, N=36\n',offset);
     [G,p,report] = sbahn2.simulate(config);
     checks = sanity_check(G,p,report);
     metrics = evaluateRun(G,p,warmup,measurement);
@@ -140,6 +150,9 @@ for h = [15 20 25 30 34 40 50 60]
 end
 writetable(dwellStudy,fullfile(out,'haltezeitstudie.csv'));
 writetable(sanities,fullfile(out,'sanity_checks.csv'));
+manifest = table(sanities.run,sanities.run+".mat", ...
+    'VariableNames',{'run','file'});
+writetable(manifest,fullfile(out,'laufverzeichnis.csv'));
 
 %% Aktualisierte Parameter und kompakte Ergebnisse maschinenlesbar sichern.
 [p,~] = sbahn2.prepare(c);
@@ -148,18 +161,25 @@ parameters = struct('source','Woche 1/NaSch-SBahn, lokale Weiterfuehrung +sbahn2
     'sourceLengthMeters',p.route.sourceLengthMeters,'stationCount',p.stationCount, ...
     'dxMeters',p.dxMeters,'dtSeconds',p.stepSeconds,'trainLengthMeters',p.trainLengthMeters, ...
     'baseTrainCount',c.trainCount,'speedSafetyLimitKmh',80, ...
-    'cruiseSpeedKmhBefore',79.2,'cruiseSpeedKmhAfter',p.driveSpeedKmh, ...
+    'cruiseSpeedKmhBefore',referenceSummary.speed_kmh(referenceSummary.stage == "vorher"), ...
+    'cruiseSpeedKmhAfter',p.driveSpeedKmh, ...
     'accelerationMps2',1,'brakingMps2',1, ...
     'dwellMeanSeconds',mean(p.stationDwellSeconds),'dwellMinSeconds',min(p.stationDwellSeconds), ...
     'dwellMaxSeconds',max(p.stationDwellSeconds),'dwellSumSeconds',sum(p.stationDwellSeconds), ...
     'blockTargetMeters',c.blockLengthMeters,'blockCount',numel(p.blocks.startCells), ...
     'blockMinMeters',min(p.blocks.lengthMeters),'blockMaxMeters',max(p.blocks.lengthMeters), ...
     'freeArrivalLapSeconds',p.expectedLapSeconds,'warmupSeconds',warmup, ...
-    'measurementSeconds',measurement,'randomInfluences',false,'runsPerSetting',1);
+    'measurementSeconds',measurement,'randomInfluences',false,'runsPerSetting',1, ...
+    'trainCounts',trainCounts,'dwellOffsetsSeconds',dwellOffsets, ...
+    'dwellStudyTrainCount',36,'evaluatedRunCount',height(sanities));
 writeJSON(fullfile(out,'parameter.json'),parameters);
+plotData = makePlotData(calibration,trainStudy,dwellStudy,parameters, ...
+    tracePosition,traceBlocked,traceTime,traceModel);
+save(fullfile(out,'diagrammdaten.mat'),'plotData','-v7');
 results = struct('parameters',parameters,'plan',plan,'calibration',calibration, ...
     'reference',referenceSummary,'validation',validation,'trainStudy',trainStudy, ...
-    'dwellStudy',dwellStudy,'sanityChecks',sanities);
+    'dwellStudy',dwellStudy,'sanityChecks',sanities,'plotData',plotData, ...
+    'runManifest',manifest);
 save(fullfile(out,'auswertung.mat'),'results','-v7');
 disp(referenceSummary); disp(trainStudy); disp(dwellStudy);
 fprintf('Fertig: %d Laeufe, alle Sanity Checks bestanden. Ergebnisse: %s\n',height(sanities),out);
@@ -188,7 +208,10 @@ signal = G.signalBlocked(2:end,:);
 speed = G.velocity(2:end,:);
 headways = diff(detected);
 hours = measurement/3600;
-metrics = struct('train_count',p.trainCount,'mean_dwell_s',mean(p.stationDwellSeconds), ...
+metrics = struct('train_count',p.trainCount,'dwell_offset_s',p.config.dwellOffsetSeconds, ...
+    'mean_dwell_s',mean(p.stationDwellSeconds), ...
+    'min_dwell_s',min(p.stationDwellSeconds),'max_dwell_s',max(p.stationDwellSeconds), ...
+    'initial_phase_shift_s',p.initialPhaseShiftSeconds,'speed_limit_kmh',p.driveSpeedKmh, ...
     'throughput_trains_per_h',numel(detected)/hours, ...
     'free_throughput_trains_per_h',3600*p.trainCount/p.expectedLapSeconds, ...
     'detected_departures',numel(detected), ...
@@ -200,6 +223,56 @@ metrics = struct('train_count',p.trainCount,'mean_dwell_s',mean(p.stationDwellSe
     'free_lap_s',p.expectedLapSeconds,'warmup_s',warmup,'measurement_s',measurement);
 assert(metrics.throughput_trains_per_h == metrics.detected_departures/hours, ...
     'SBahn2:ThroughputUnit','Durchsatz wurde nicht in Zügen pro Stunde berechnet.');
+end
+
+function value = departureReturnSeconds(p)
+departures = p.state.departureLog;
+arrivals = p.state.arrivalLog;
+first = departures(find(departures(:,3) == 1,1),1);
+returned = arrivals(find(arrivals(:,3) == 1 & arrivals(:,1) > first,1),1);
+assert(~isempty(first) && ~isempty(returned),'SBahn2:ReferenceCycle','Referenzumlauf nicht vollständig.');
+value = returned-first;
+assert(value == p.expectedLapSeconds-p.stationDwellSeconds(1), ...
+    'SBahn2:MeasuredReference','Gemessener und vorberechneter Referenzumlauf widersprechen sich.');
+end
+
+function data = makePlotData(calibration,trains,dwells,parameters,position,blocked,time,model)
+% Alle Kurvenkoordinaten stammen hier aus MATLAB-Ergebnissen. Python zeichnet.
+[~,best] = min(calibration.absolute_error_s);
+data.schemaVersion = 2;
+data.speed = struct('xKmh',calibration.speed_kmh, ...
+    'modelSeconds',calibration.model_departure_return_s, ...
+    'referenceSeconds',calibration.reference_departure_return_s, ...
+    'absoluteErrorSeconds',calibration.absolute_error_s, ...
+    'bestIndex',best,'initialIndex',height(calibration),'trainCount',1);
+data.trains = curve(trains,trains.train_count);
+data.trains.baseTrainCount = parameters.baseTrainCount;
+data.trains.baseIndex = find(trains.train_count == parameters.baseTrainCount);
+data.trains.comparisonIndex = find(trains.train_count == parameters.dwellStudyTrainCount);
+data.dwell = curve(dwells,dwells.dwell_offset_s);
+data.dwell.trainCount = parameters.dwellStudyTrainCount;
+data.dwell.meanDwellSeconds = dwells.mean_dwell_s;
+data.dwell.minDwellSeconds = dwells.min_dwell_s;
+data.dwell.maxDwellSeconds = dwells.max_dwell_s;
+data.dwell.initialPhaseShiftSeconds = dwells.initial_phase_shift_s;
+data.dwell.baseIndex = find(dwells.dwell_offset_s == 0);
+data.meta = parameters;
+selected = time >= 10800 & time <= 12600;
+data.spaceTime = struct('positionKm',(position(selected,:)-1)*model.dxMeters/1000, ...
+    'timeMinutes',(time(selected)-10800)/60,'blocked',blocked(selected,:), ...
+    'stationKm',(model.route.stationCells-1)*model.dxMeters/1000, ...
+    'stationNames',{cellstr(model.route.stationNames)}, ...
+    'ringLengthKm',model.route.lengthMeters/1000,'trainCount',model.trainCount, ...
+    'startMinute',10800/60,'durationMinutes',(12600-10800)/60);
+end
+
+function data = curve(t,x)
+data = struct('x',x,'throughput',t.throughput_trains_per_h, ...
+    'freeThroughput',t.free_throughput_trains_per_h, ...
+    'blockedSecondsPerTrainHour',t.blocked_s_per_train_h, ...
+    'blockedTrainSeconds',t.blocked_train_s,'departureCount',t.detected_departures, ...
+    'meanHeadwaySeconds',t.mean_headway_s, ...
+    'measurementSeconds',t.measurement_s,'warmupSeconds',t.warmup_s);
 end
 
 function row = checkRow(name,checks)

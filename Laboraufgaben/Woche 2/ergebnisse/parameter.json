@@ -25,5 +25,25 @@
   "warmupSeconds": 3600,
   "measurementSeconds": 10800,
   "randomInfluences": false,
-  "runsPerSetting": 1
+  "runsPerSetting": 1,
+  "trainCounts": [
+    12,
+    16,
+    20,
+    24,
+    28,
+    32,
+    36,
+    40
+  ],
+  "dwellOffsetsSeconds": [
+    0,
+    6,
+    12,
+    18,
+    24,
+    30
+  ],
+  "dwellStudyTrainCount": 36,
+  "evaluatedRunCount": 25
 }

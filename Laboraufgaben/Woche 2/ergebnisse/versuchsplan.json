@@ -18,5 +18,26 @@
   "measurementSeconds": 10800,
   "detector": "Abfahrten an Station 1 im halboffenen Messintervall [3600,14400)",
   "stochasticInfluences": false,
-  "runsPerSetting": 1
+  "runsPerSetting": 1,
+  "baseTrainCount": 12,
+  "trainCounts": [
+    12,
+    16,
+    20,
+    24,
+    28,
+    32,
+    36,
+    40
+  ],
+  "dwellStudyTrainCount": 36,
+  "dwellOffsetsSeconds": [
+    0,
+    6,
+    12,
+    18,
+    24,
+    30
+  ],
+  "initialization": "Kleinste gueltige gemeinsame Verschiebung der freien Zeitphasen"
 }

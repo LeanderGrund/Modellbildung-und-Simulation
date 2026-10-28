@@ -9,8 +9,13 @@ Für S41 beträgt die Längenänderung +0,401 m; Stationsrundungen betragen
 höchstens 0,5 m. Die geografische Anzeige skaliert entlang der Quellgeometrie.
 
 Die Geschwindigkeit v ist die ganzzahlige Meterzahl des letzten Schritts.
-Eine Stufe entspricht 1 m/s = 3,6 km/h. Die höchste Stufe ist 22 m/s
-(79,2 km/h), da die Grenze von 80 km/h nicht überschritten werden darf.
+Eine Stufe entspricht 1 m/s = 3,6 km/h. Im Live-Skript ist die
+Maximalgeschwindigkeit über config.cruiseSpeedKmh von 3,6 bis 80 km/h
+einstellbar. Die höchste Stufe ist floor(cruiseSpeedKmh/3.6) m/s;
+bei der Standardeingabe 80 km/h sind das 22 m/s (79,2 km/h).
+Die Eingabe ist eine Obergrenze. Bei freiem Fahrweg wird bis dorthin
+beschleunigt; Stationshalt, Bremsweg und Verkehr begrenzen zusätzlich.
+Sie wirkt ausschließlich im Fahrmodell „Beschleunigen und Bremsen“.
 Beschleunigung und Bremsverzögerung sind mit höchstens 1 m/s² angesetzt.
 Dies sind vereinfachte Modellparameter, keine Anpassung an einzelne Fahrten.
 
@@ -24,12 +29,12 @@ darf nicht erreicht werden. Die Positionsangabe bezeichnet die Zugspitze.
 Mit d als kleinstem dieser Abstände wird die größte ganze Zahl w
 gewählt, die beide Bedingungen erfüllt:
 
-    max(0, v − 1) ≤ w ≤ min(v + 1, 22)
+    max(0, v − 1) ≤ w ≤ min(v + 1, vmax)
     B(w) = w(w + 1)/2 ≤ d
 
 Die direkte Berechnung lautet:
 
-    w = min(v + 1, 22, floor((sqrt(1 + 8d) − 1)/2))
+    w = min(v + 1, vmax, floor((sqrt(1 + 8d) − 1)/2))
 
 Danach wird geprüft, dass w ≥ max(0,v − 1). Bei einer Verletzung wird
 abgebrochen; ein unzulässig starker Bremsschritt wird nicht kaschiert.
@@ -269,8 +274,12 @@ Einfahrt, Wartegrund und Bremsreserve. Physische Belegung bleibt separat geprüf
 
 ## Prüfungen und Projektumfang
 
-Die 65 MATLAB-Tests unter `tests/` prüfen beide Fahrmodelle, Stationshalte,
+Die 71 MATLAB-Tests unter `tests/` prüfen beide Fahrmodelle, Stationshalte,
 Bremsreserven, Ringübergänge sowie Anzeige- und Animationsunabhängigkeit.
+Die drei Tests in `SpeedLimitTest` prüfen außerdem die eingegebene
+Geschwindigkeitsgrenze, das Abrunden und die Eingabegrenzen.
+`TimetableComparisonTest` prüft außerdem den absoluten Fahrzeitfehler,
+unvollständige Ringfahrten und den fehlenden Referenzvergleich für ideale Ringe.
 Beim Strukturumbau wurden zusätzlich zwölf Vorher/Nachher-Fälle mit exakt
 gleichen Trajektorien, Stationsereignissen und bisherigen Kennzahlen geprüft.
 Das Live-Skript wurde vollständig unter MATLAB R2026a ausgeführt.

@@ -9,6 +9,17 @@ Der Projektpfad wird beim Start automatisch eingebunden. Nach der Animation
 werden die tatsächlich verwendeten Einstellungen angezeigt. MATLAB Stop
 bricht einen Lauf ab. Die zuletzt gespeicherten Einstellungen bleiben erhalten.
 
+FAHRPLANVERGLEICH UND DARSTELLUNG
+Die Kennzahlen enthalten für die reale S41 zusätzlich einen GTFS-Vergleich:
+Abfahrt Beusselstraße bis Rückkehrankunft (Referenz 3558 s).
+Absoluter Fehler = Betrag(Modellfahrzeit - GTFS-Fahrzeit), in Sekunden.
+Der freie Referenzfehler ist auch für kurze Läufe verfügbar. Der gemessene
+Fehler verwendet die mittlere vollständig beobachtete Ringfahrzeit und
+bleibt bei unvollständigen Läufen NaN; idealisierte Ringe werden nicht
+gegen diese reale Referenz verglichen. Geplante und tatsächliche Fahrzeit
+sind ausdrücklich getrennt. Im Raum-Zeit-Diagramm sind alle Titel,
+Achsenbeschriftungen, Tickwerte und die Umlaufmittel-Beschriftung schwarz.
+
 DIE DREI DATENBEREICHE
 p.config: tatsächlich verwendete Einstellungen.
 p.route: feste Strecke, Stationen, Rasterpositionen und Quelldaten.
@@ -27,6 +38,17 @@ Der Referenzumlauf verwendet dieselbe Funktion advance wie der eigentliche
 Lauf. Er bleibt deterministisch. Weitere Erklärungen stehen in MODELL.md.
 
 FAHRMODELLE
+Im Fahrmodell „Beschleunigen und Bremsen“ kann im Live-Skript die
+Maximalgeschwindigkeit zwischen 3,6 und 80 km/h eingegeben werden.
+Sie begrenzt die Geschwindigkeit; bei freiem Fahrweg beschleunigt der Zug
+bis zu dieser Grenze. Stationshalte, Bremsweg und Verkehr können die
+tatsächliche Geschwindigkeit weiter reduzieren. Wegen des 1-m-/1-s-Rasters
+wird auf ganze m/s abgerundet: Eingabe 60 km/h ergibt 57,6 km/h, Eingabe
+80 km/h ergibt 79,2 km/h. Nach dem Start werden Eingabe und verwendete
+Geschwindigkeitsstufe getrennt angezeigt. Der Codeparameter heißt
+config.cruiseSpeedKmh. Im On/Off-Modell bleibt die Geschwindigkeit des
+bisherigen festen Rasters erhalten; dort wirkt dieses Eingabefeld nicht.
+
 On/Off: Vergleich mit 2790 Fahrzellen, Δt = 1 s und
 Δx = Streckenlänge / 2790. Bei 27 Halten zu 30 s beträgt der freie
 Umlauf 3600 s; zwölf Züge ergeben 300 s Referenzzugfolge.

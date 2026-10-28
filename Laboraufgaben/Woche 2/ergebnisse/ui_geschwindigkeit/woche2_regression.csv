@@ -1,0 +1,7 @@
+Name,Passed,Failed,Incomplete,Duration,Details
+Week2Test/configuredCruisingSpeed,1,0,0,1.1926262,
+Week2Test/excessiveCruisingSpeedRejected,1,0,0,0.1485575,
+Week2Test/originalDynamicsUnchanged,1,0,0,1.0231158,
+Week2Test/gtfsOffsetPreservesProfileAndCycleBalance,1,0,0,1.5209656,
+Week2Test/offsetIsAPlannedHold,1,0,0,0.5588041,
+Week2Test/safePhaseSearchPreservesTrainCountAndIsDeterministic,1,0,0,1.4108667,
