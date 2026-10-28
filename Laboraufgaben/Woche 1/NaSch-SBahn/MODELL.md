@@ -240,9 +240,9 @@ Fahrt auf Sicht oder weiteren betrieblichen Verfahren.
 ## Darstellung und Störungsauswertung
 
 Violette Züge zeigen tatsächlich laufende Zusatzhalte; ein violetter Blockpunkt
-zeigt einen zeitweise gesperrten Zugang. Im Zeit-Weg-Diagramm kennzeichnet
-Violett Zusatzhalte und Stillstand vor der Sperre. Normale Belegungswartezeit
-bleibt orange. Ein Zug, der für einen Zusatzhalt noch seinen geplanten Halt
+zeigt einen zeitweise gesperrten Zugang. Diese Zustandsfarben gelten
+ausschließlich in der Animation; die Raum-Zeit-Auswertung verwendet die
+Geschwindigkeit als gemeinsame Farbgröße. Ein Zug, der für einen Zusatzhalt noch seinen geplanten Halt
 abwartet, wird bis zum Beginn des Zusatzanteils als normaler Stationshalt gezeigt.
 
 `p.state.stopLog` enthält für jede Ankunft sechs Spalten:
@@ -289,3 +289,38 @@ unvollständige Halte am Laufende, sichere Aktivierung im Bremsweg, verbrauchte
 Einfahrerlaubnisse, Sperren am Ringanfang und Wiederanlauf nach Sperrende.
 Bei ausgeschalteten Störungen wurden die bisherigen Trajektorien, Ereignisse
 und Kennzahlen zusätzlich in zwölf Fällen exakt verglichen.
+
+## Raum-Zeit-Auswertung mit Geschwindigkeitsfarben
+
+Die Übersicht zeigt alle Trajektorien über der Zeit mit einer gemeinsamen
+Farbskala von 0 bis 80 km/h. Orange kennzeichnet Geschwindigkeit null,
+Blau schnelle Fahrt. Jede Strecke zwischen zwei Zeitpunkten erhält die
+Geschwindigkeit des zurückgelegten Intervalls, also G.velocity der Zielzeile.
+Geschwindigkeit null kann sowohl regulären Stationshalt als auch eine
+Störung oder Verkehrsblockierung bedeuten. Ursachen werden aus markierten
+Ereignissen, Protokollen und dem Vergleich mit ungestörten Läufen erklärt.
+
+Der Auswertungszug wird im Live-Skript gewählt, schwarz hervorgehoben und
+etwa einmal pro Minute mit einem kleinen Kreis markiert. Rauten zeigen
+gezielte Zusatzhalte sowie zufällige Zusatzhalte dieses Zuges. Eine
+gestrichelte schwarze Spur markiert einen zeitweise gesperrten Zugang
+während der Sperrdauer. Die Stationen bleiben dezente Hintergrundlinien.
+
+Der zweite Plot zeigt etwa fünf Kilometer um ein tatsächlich beobachtetes
+Ereignis. Priorität: gezielter Zusatzhalt, zeitweise Blocksperre, zufälliger
+Zusatzhalt des Auswertungszuges, sein erster blockierter Halt, seine erste
+Stationsankunft. Bei sehr kurzen Läufen dient seine Startposition als Zentrum.
+Die Zeitspanne beginnt bis zu vier Minuten vor dem Ereignis und reicht
+mindestens acht Minuten danach beziehungsweise vier Minuten über die
+vergebene Halte-/Sperrdauer hinaus, begrenzt durch den simulierten Zeitraum.
+Der Ausschnitt schneidet den Ring gegenüber dem Ereignis auf: Benachbarte
+Positionen am Ringanfang und Ringende bleiben räumlich nebeneinander.
+Die Achsenbeschriftung gibt Kilometer modulo Ringlänge an. Stationen im
+Ausschnitt sind beschriftet. Übersicht und Detail verwenden dieselbe Farbskala.
+
+Das Netzmittel einschließlich stehender Züge steht separat über der Zeit.
+Die Referenzlinie beschreibt den freien störungsfreien Umlauf. Ein lokaler
+Rückstau muss den Netzmittelwert nicht stark verändern. Geschwindigkeit
+und Beschleunigung des gewählten Auswertungszuges folgen im eigenen Diagramm.
+Der Auswertungszug wird beim Start übernommen; Bewegung, Zufallsfolge und
+Animation bleiben davon unabhängig. Es wird kein dichtes 1-m-Zellbild erzeugt.

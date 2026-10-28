@@ -45,7 +45,7 @@ die reale S41 und verwendet je Station den Median gültiger Zwischenhalte
 am 14.10.2026. Tripanfang und Tripende sind ausgeschlossen. Die Halte
 betragen 30–48 s, zusammen 912 s; es sind geplante Zeiten, keine Ist-Daten.
 Alle Züge verwenden dasselbe geplante Profil. Zuschaltbare Zusatzhalte
-werden bei der jeweiligen Ankunft zusätzlich vergeben. Orange markiert blockierten Stillstand nach Ablauf
+werden bei der jeweiligen Ankunft zusätzlich vergeben. In der Animation markiert Orange blockierten Stillstand nach Ablauf
 des geplanten Halts; langsames Folgen zählt nicht als blockierte Zugsekunde.
 
 Der lokale Datenstand liegt in daten/ringbahn_2026-10-14. S41 beginnt an
@@ -87,9 +87,20 @@ Gezielter Zusatzhalt: Zug, Station, frühester Zeitpunkt und Zusatzdauer.
 Zufällige Zusatzhalte: Wahrscheinlichkeit pro Ankunft, Dauerbereich und Startwert.
 Zeitweise Blocksperre: Blocknummer, Beginn und Dauer; benötigt Blocksteuerung.
 Alle Störungszeiten sind Sekunden. Die Vorgaben sind Versuchswerte.
-Violett markiert abgewartete Zusatzhalte und gesperrte Blockzugänge.
+In der Animation markiert Violett Zusatzhalte und gesperrte Blockzugänge.
 Die Störungsauswertung zeigt vergebene und beobachtete Zusatzzeiten sowie
 gewöhnliche Blockwartezeiten und Sperrwartezeiten getrennt. Details der
 Zusatzhalte stehen in p.state.stopLog. Der freie Referenzumlauf bleibt unverändert.
 Die Sperre lässt bei Beginn bereits unvermeidbare Einfahrten einmalig zu;
 andere Züge bremsen regulär davor. Das ist ein vereinfachtes Sperrmodell.
+
+RAUM-ZEIT-AUSWERTUNG
+Die Übersicht und der Detailausschnitt verwenden dieselbe Geschwindigkeitsskala
+von 0 bis 80 km/h: Orange ist Stillstand, Blau schnelle Fahrt. Zugfarben und
+dichte Haltepunktketten entfallen. „Auswertungszug für Diagramme“ wählt eine
+schwarz hervorgehobene Trajektorie und den Zug für das Fahrdynamikdiagramm.
+Rauten markieren Zusatzhalt-Ereignisse; eine gestrichelte schwarze Spur zeigt
+einen gesperrten Blockzugang während des gewählten Zeitfensters.
+Der Detailausschnitt folgt einem relevanten Ereignis und verbindet dabei
+auch benachbarte Positionen über den Ringübergang. Die mittlere Geschwindigkeit
+aller Züge erscheint separat. Die Simulation wird durch diese Auswahl nicht verändert.
