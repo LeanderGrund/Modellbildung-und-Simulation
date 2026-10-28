@@ -1,0 +1,22 @@
+{
+  "calibrationMetric": "Abfahrt Beusselstrasse bis Rueckkehrankunft [s]",
+  "validationMetric": "27 Abschnittsfahrzeiten: Abfahrt bis naechste Ankunft [s]",
+  "objective": "Minimiere absoluten Fehler der Abfahrt-Rueckkehr-Zeit",
+  "candidateSpeedLevelsMps": [
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22
+  ],
+  "fixedDwell": "GTFS-Stationsmediane 14.10.2026",
+  "warmupSeconds": 3600,
+  "measurementSeconds": 10800,
+  "detector": "Abfahrten an Station 1 im halboffenen Messintervall [3600,14400)",
+  "stochasticInfluences": false,
+  "runsPerSetting": 1
+}
