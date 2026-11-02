@@ -1,0 +1,28 @@
+Nr,Station,Position_km,GTFS_Halt_s,Geplant_mit_Zuschlag_s,Quellhalte
+1,Beusselstraße,0,42,42,16
+2,Westhafen,1.035,30,30,219
+3,Wedding,2.846,36,36,219
+4,Gesundbrunnen,4.485,48,48,218
+5,Schönhauser Allee,6.29,36,36,220
+6,Prenzlauer Allee,7.119,30,30,220
+7,Greifswalder Straße,8.174,30,30,217
+8,Landsberger Allee,9.826,30,30,197
+9,Storkower Straße,10.779,30,30,207
+10,Frankfurter Allee,12.003,36,36,207
+11,Ostkreuz,13.45,48,48,197
+12,Treptower Park,14.639,30,30,216
+13,Sonnenallee,17.021,30,30,215
+14,Neukölln,17.985,36,36,218
+15,Hermannstraße,18.826,30,30,215
+16,Tempelhof,22.211,30,30,213
+17,Südkreuz,23.732,42,42,212
+18,Schöneberg,24.875,30,30,216
+19,Innsbrucker Platz,25.597,30,30,216
+20,Bundesplatz,26.394,30,30,216
+21,Heidelberger Platz,27.689,30,30,218
+22,Hohenzollerndamm,28.91,30,30,218
+23,Halensee,29.92,30,30,218
+24,Westkreuz,30.695,48,48,217
+25,Messe Nord/ZOB,31.48,30,30,217
+26,Westend,32.702,30,30,216
+27,Jungfernheide,34.908,30,30,219

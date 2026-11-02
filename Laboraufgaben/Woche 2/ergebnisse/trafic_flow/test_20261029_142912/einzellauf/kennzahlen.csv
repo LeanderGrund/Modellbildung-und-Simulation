@@ -1,0 +1,13 @@
+Kennzahl,Wert
+Durchsatz nach Einschwingen [Züge/h],5
+Gezählte Abfahrten im Messfenster,5
+Gemessener Umlauf gesamt [min],NaN
+Gemessene Zugfolge gesamt [min],11.0857142857143
+Gemessener Stationshalt gesamt [s],41.1805555555556
+Höchste Geschwindigkeitsstufe [km/h],79.2
+Gemessene Höchstgeschwindigkeit [km/h],79.2
+Mittlere Geschwindigkeit gesamt [km/h],16.9121111111111
+Mittlere Geschwindigkeit Messfenster [km/h],17.3135
+Blockierte Zugsekunden gesamt,0
+Davon vor belegtem Block,0
+Maximal gleichzeitig blockiert,0

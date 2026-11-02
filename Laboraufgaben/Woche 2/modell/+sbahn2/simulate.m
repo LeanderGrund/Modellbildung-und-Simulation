@@ -18,6 +18,13 @@ G.signalBlocked = false(p.stepCount+1,p.trainCount);
 G.extraWaitSteps = zeros(p.stepCount+1,p.trainCount);
 G.closureBlocked = false(p.stepCount+1,p.trainCount);
 G.closurePermission = false(p.stepCount+1,p.trainCount);
+if p.config.randomBrakeEnabled
+    G.randomBrakeTarget = nan(p.stepCount+1,p.trainCount);
+    G.randomBrakeApplied = false(p.stepCount+1,p.trainCount);
+end
+if p.config.anticipationEnabled
+    G.anticipationApplied = false(p.stepCount+1,p.trainCount);
+end
 stream = RandStream('mt19937ar','Seed',p.config.randomSeed);
 h = [];
 for k = 1:p.stepCount+1
@@ -30,6 +37,13 @@ for k = 1:p.stepCount+1
     G.extraWaitSteps(k,:) = state.extraWaitSteps;
     G.closureBlocked(k,:) = state.closureBlockedLastStep;
     G.closurePermission(k,:) = state.closurePermission;
+    if p.config.randomBrakeEnabled
+        G.randomBrakeTarget(k,:) = state.randomBrakeTarget;
+        G.randomBrakeApplied(k,:) = state.randomBrakeLastStep;
+    end
+    if p.config.anticipationEnabled
+        G.anticipationApplied(k,:) = state.anticipationLastStep;
+    end
     if p.config.animate && (mod(k-1,p.config.displayEvery) == 0 || k == p.stepCount+1)
         h = drawState(state,p,h);
         if p.config.framePauseSeconds > 0 && k <= p.stepCount

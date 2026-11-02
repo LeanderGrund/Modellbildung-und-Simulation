@@ -1,0 +1,34 @@
+Parameter,Wert
+Streckengrundlage,Reale Ringbahn S41
+Darstellung,Geografischer Streckenverlauf
+Fahrmodell,Beschleunigen und Bremsen
+Blocksteuerung,OSM-Signalabschnitte
+Zielblockabstand,500 m; bei OSM ohne Wirkung
+Haltezeitmodell,GTFS-Stationshalte
+Maximalgeschwindigkeit Eingabe,80 km/h
+Maximalgeschwindigkeit effektiv,79.2 km/h
+Bildpause,0.05 s
+Bildabstand,10 Schritte
+Züge,12
+Einschwingzeit,60 min
+Messdauer,120 min
+p,0.15
+Störungszeitspanne,0 bis 120 s
+Langsames Abbremsen,false
+Beta,0.25 1/s
+Zusätzliche Wartezeit,false
+Fester Zuschlag,0 s
+Zufallsstartwert,42
+Blockanzahl,117
+Zuglänge,148 m
+Raster,1 m / 1 s
+Freier Referenzumlauf,52.8833 min
+Freie Referenzzugfolge,4.4069 min
+Blocklängen min–max,104–1207 m
+Stationshalte min–max,30–48 s
+Simulationsdauer gesamt,180 min
+Animation,true
+Streckenlänge,36.9720 km
+Beschleunigung / Bremsverzögerung,1 / 1 m/s²
+Rundung der Ringlänge,0.401 m
+Größte Stationsrundung,0.48 m

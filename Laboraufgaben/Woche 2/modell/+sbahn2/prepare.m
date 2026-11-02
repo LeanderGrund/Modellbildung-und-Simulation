@@ -31,7 +31,7 @@ model.maxSpeedKmh = 80;
 dynamic = config.motionModel == "Beschleunigen und Bremsen";
 model.vmax = 1;
 if dynamic
-    model.vmax = floor(config.cruiseSpeedKmh/3.6*model.stepSeconds/model.dxMeters);
+    model.vmax = floor(config.cruiseSpeedKmh/3.6*model.stepSeconds/model.dxMeters+1e-10);
 end
 model.accelerationMetersPerSecondSquared = double(dynamic);
 model.brakingMetersPerSecondSquared = double(dynamic);
@@ -74,6 +74,17 @@ validateattributes(config.cruiseSpeedKmh,{'numeric'}, ...
 validateattributes(config.dwellOffsetSeconds,{'numeric'}, ...
     {'scalar','real','finite','integer','nonnegative'});
 validateattributes(config.initialPhaseSearch,{'logical'},{'scalar'});
+validateattributes(config.randomBrakeEnabled,{'logical'},{'scalar'});
+validateattributes(config.anticipationEnabled,{'logical'},{'scalar'});
+validateattributes(config.randomBrakeProbability,{'numeric'}, ...
+    {'scalar','real','finite','>=',0,'<=',1});
+validateattributes(config.anticipationBeta,{'numeric'}, ...
+    {'scalar','real','finite','positive'});
+assert(~(config.randomBrakeEnabled || config.anticipationEnabled) || ...
+    config.motionModel == "Beschleunigen und Bremsen",'SBahn:TrafficDynamics', ...
+    'Zufallsbremsung und Antizipation benötigen das dynamische Fahrmodell.');
+assert(~config.randomBrakeEnabled || config.blockMode ~= "Ohne Blocksteuerung", ...
+    'SBahn:BrakeBlocks','Zufallsbremsung benötigt Blockabschnitte.');
 assert(isstring(config.dataFolder) && isscalar(config.dataFolder), ...
     'SBahn:DataFolder','dataFolder muss ein einzelner Pfad als String sein.');
 choices = {"trackMode",["Idealisierter Ring","Reale Ringbahn S41"],"SBahn:TrackMode"; ...
@@ -97,10 +108,11 @@ for name = ["targetStopEnabled","randomStopEnabled","closureEnabled"]
     validateattributes(config.(name),{'logical'},{'scalar'});
 end
 for name = ["targetStopTrain","targetStopStation","targetStopSeconds", ...
-        "randomStopMinSeconds","randomStopMaxSeconds","closureBlock","closureDurationSeconds"]
+        "closureBlock","closureDurationSeconds"]
     validateattributes(config.(name),{'numeric'},{'scalar','real','finite','integer','positive'});
 end
-for name = ["targetStopAfterSeconds","closureStartSeconds","randomSeed"]
+for name = ["targetStopAfterSeconds","closureStartSeconds","randomSeed", ...
+        "randomStopMinSeconds","randomStopMaxSeconds"]
     validateattributes(config.(name),{'numeric'},{'scalar','real','finite','integer','nonnegative'});
 end
 validateattributes(config.randomSeed,{'numeric'},{'<=',2^32-1});

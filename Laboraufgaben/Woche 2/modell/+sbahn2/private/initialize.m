@@ -5,7 +5,7 @@ function [state,model] = initialize(model)
 %
 %   See also sbahn2.prepare
 
-referenceState = emptyState(1,model.stationCount);
+referenceState = emptyState(1,model);
 referenceState.position = model.route.stationCells(1);
 referenceState.nextStation = 2;
 referenceState.dwellStation = 1;
@@ -37,7 +37,7 @@ model.averageSpeedKmh = 3.6*model.route.lengthMeters/model.expectedLapSeconds;
 phase = floor((0:model.trainCount-1)*step/model.trainCount)+1;
 maximumShift = double(model.config.initialPhaseSearch)*(step-1);
 for shift = 0:maximumShift
-    state = emptyState(model.trainCount,model.stationCount);
+    state = emptyState(model.trainCount,model);
     shifted = mod(phase-1+shift,step)+1;
     for field = fields
         state.(field) = reference.(field)(shifted);
@@ -64,8 +64,9 @@ error('SBahn:NoSafeInitialPhase', ...
     'Keine gemeinsame Verschiebung der freien Zeitphasen ergibt eine zulässige Startbelegung.');
 end
 
-function state = emptyState(trainCount,stationCount)
+function state = emptyState(trainCount,model)
 %emptyState - Explizite Zugfelder mit dem Arrayindex als Zugnummer anlegen
+stationCount = model.stationCount;
 state = struct('position',ones(1,trainCount),'velocity',zeros(1,trainCount), ...
     'waitSteps',zeros(1,trainCount),'nextStation',ones(1,trainCount), ...
     'dwellStation',zeros(1,trainCount),'timeSeconds',0, ...
@@ -76,4 +77,15 @@ state = struct('position',ones(1,trainCount),'velocity',zeros(1,trainCount), ...
     'closureActive',false,'closureActivated',false,'closurePermission',false(1,trainCount), ...
     'closureDistance',inf(1,trainCount),'closureBlockedLastStep',false(1,trainCount), ...
     'closureGraceLog',zeros(0,3));
+% Bei ausgeschalteten Erweiterungen bleibt auch die Zustandsstruktur mit
+% Woche 1 identisch (bestehende Regressionstests).
+if model.config.randomBrakeEnabled
+    state.randomBrakeTarget = nan(1,trainCount);
+    state.randomBrakeLastStep = false(1,trainCount);
+    state.blockEntryLog = zeros(0,6); % Zeit, Zug, Block, v_Eintritt, Ziel, Treffer
+end
+if model.config.anticipationEnabled
+    state.anticipationRemainder = zeros(1,trainCount);
+    state.anticipationLastStep = false(1,trainCount);
+end
 end

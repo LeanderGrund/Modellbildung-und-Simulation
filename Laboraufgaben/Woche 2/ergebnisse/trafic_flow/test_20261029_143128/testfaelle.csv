@@ -1,0 +1,3 @@
+case_name,simulation_count,figure_count,elapsed_s,passed
+einzellauf,1,4,23.0540179,1
+verkehrsstrom,9,1,41.8146362,1

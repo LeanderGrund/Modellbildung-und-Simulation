@@ -1,0 +1,162 @@
+                 <strong>Parameter</strong>                              <strong>Wert</strong>              
+    <strong>___________________________________</strong>    <strong>_______________________________</strong>
+
+    "Streckengrundlage"                    "Reale Ringbahn S41"           
+    "Darstellung"                          "Geografischer Streckenverlauf"
+    "Fahrmodell"                           "Beschleunigen und Bremsen"    
+    "Blocksteuerung"                       "OSM-Signalabschnitte"         
+    "Zielblockabstand"                     "500 m; bei OSM ohne Wirkung"  
+    "Haltezeitmodell"                      "GTFS-Stationshalte"           
+    "Maximalgeschwindigkeit Eingabe"       "80 km/h"                      
+    "Maximalgeschwindigkeit effektiv"      "79.2 km/h"                    
+    "Bildpause"                            "0.05 s"                       
+    "Bildabstand"                          "10 Schritte"                  
+    "Züge"                                 "12"                           
+    "Einschwingzeit"                       "60 min"                       
+    "Messdauer"                            "180 min"                      
+    "p"                                    "0.1"                          
+    "Störungszeitspanne"                   "0 bis 30 s"                   
+    "Langsames Abbremsen"                  "true"                         
+    "Beta"                                 "0.25 1/s"                     
+    "Zusätzliche Wartezeit"                "true"                         
+    "Fester Zuschlag"                      "6 s"                          
+    "Zufallsstartwert"                     "42"                           
+    "Blockanzahl"                          "117"                          
+    "Zuglänge"                             "148 m"                        
+    "Raster"                               "1 m / 1 s"                    
+    "Freier Referenzumlauf"                "55.5833 min"                  
+    "Freie Referenzzugfolge"               "4.6319 min"                   
+    "Blocklängen min–max"                  "104–1207 m"                   
+    "Stationshalte min–max"                "36–54 s"                      
+    "Simulationsdauer gesamt"              "240 min"                      
+    "Animation"                            "false"                        
+    "Streckenlänge"                        "36.9720 km"                   
+    "Beschleunigung / Bremsverzögerung"    "1 / 1 m/s²"                   
+    "Rundung der Ringlänge"                "0.401 m"                      
+    "Größte Stationsrundung"               "0.48 m"                       
+
+                      <strong>Kennzahl</strong>                        <strong>Wert</strong> 
+    <strong>_____________________________________________</strong>    <strong>______</strong>
+
+    "Durchsatz nach Einschwingen [Züge/h]"           5.3333
+    "Gezählte Abfahrten im Messfenster"                  16
+    "Gemessener Umlauf gesamt [min]"                 134.02
+    "Gemessene Zugfolge gesamt [min]"                11.121
+    "Gemessener Stationshalt gesamt [s]"             41.315
+    "Höchste Geschwindigkeitsstufe [km/h]"             79.2
+    "Gemessene Höchstgeschwindigkeit [km/h]"           79.2
+    "Mittlere Geschwindigkeit gesamt [km/h]"         16.664
+    "Mittlere Geschwindigkeit Messfenster [km/h]"    16.572
+    "Blockierte Zugsekunden gesamt"                       0
+    "Davon vor belegtem Block"                            0
+    "Maximal gleichzeitig blockiert"                      0
+
+                  <strong>Fahrplanvergleich</strong>                   <strong>Wert</strong> 
+    <strong>_____________________________________________</strong>    <strong>______</strong>
+
+    "GTFS-Referenz: Abfahrt bis Rückkehr [s]"          3558
+    "Freies Modell [s]"                                3287
+    "Absoluter Fehler frei [s]"                         271
+    "Gemessene mittlere Abfahrt bis Rückkehr [s]"    7962.3
+    "Absoluter Fehler gemessen [s]"                  4404.3
+    "Vollständige Ringfahrten"                           10
+
+    <strong>Nr</strong>           <strong>Station</strong>           <strong>Position_km</strong>    <strong>GTFS_Halt_s</strong>    <strong>Geplant_mit_Zuschlag_s</strong>    <strong>Quellhalte</strong>
+    <strong>__</strong>    <strong>_____________________</strong>    <strong>___________</strong>    <strong>___________</strong>    <strong>______________________</strong>    <strong>__________</strong>
+
+     1    "Beusselstraße"                 0           42                   48                  16    
+     2    "Westhafen"                 1.035           30                   36                 219    
+     3    "Wedding"                   2.846           36                   42                 219    
+     4    "Gesundbrunnen"             4.485           48                   54                 218    
+     5    "Schönhauser Allee"          6.29           36                   42                 220    
+     6    "Prenzlauer Allee"          7.119           30                   36                 220    
+     7    "Greifswalder Straße"       8.174           30                   36                 217    
+     8    "Landsberger Allee"         9.826           30                   36                 197    
+     9    "Storkower Straße"         10.779           30                   36                 207    
+    10    "Frankfurter Allee"        12.003           36                   42                 207    
+    11    "Ostkreuz"                  13.45           48                   54                 197    
+    12    "Treptower Park"           14.639           30                   36                 216    
+    13    "Sonnenallee"              17.021           30                   36                 215    
+    14    "Neukölln"                 17.985           36                   42                 218    
+    15    "Hermannstraße"            18.826           30                   36                 215    
+    16    "Tempelhof"                22.211           30                   36                 213    
+    17    "Südkreuz"                 23.732           42                   48                 212    
+    18    "Schöneberg"               24.875           30                   36                 216    
+    19    "Innsbrucker Platz"        25.597           30                   36                 216    
+    20    "Bundesplatz"              26.394           30                   36                 216    
+    21    "Heidelberger Platz"       27.689           30                   36                 218    
+    22    "Hohenzollerndamm"          28.91           30                   36                 218    
+    23    "Halensee"                  29.92           30                   36                 218    
+    24    "Westkreuz"                30.695           48                   54                 217    
+    25    "Messe Nord/ZOB"            31.48           30                   36                 217    
+    26    "Westend"                  32.702           30                   36                 216    
+    27    "Jungfernheide"            34.908           30                   36                 219    
+
+                         <strong>Kennzahl</strong>                          <strong>Wert</strong> 
+    <strong>___________________________________________________</strong>    <strong>_____</strong>
+
+    "Blockeinfahrten geprüft"                               2535
+    "Zufallsbremsungen ausgelöst"                            272
+    "Bremsende Zugsekunden durch Zufallsbremsung"           1214
+    "Zufällige Stationszusatzhalte mit positiver Dauer"       62
+    "Zugewiesener Zufallszusatz [s]"                         901
+    "Beobachteter Zusatzhalt [Zug·s]"                        901
+    "Geplanter Stationshalt [Zug·s]"                       23215
+    "Warten vor gewöhnlich belegtem Block [Zug·s]"             0
+    "Bremsende Zugsekunden durch Antizipation"             34020
+
+    <strong>Zeit_s</strong>    <strong>Zug</strong>    <strong>Station</strong>    <strong>Geplant_s</strong>    <strong>Gezielter_Zusatz_s</strong>    <strong>Zufallszusatz_s</strong>
+    <strong>______</strong>    <strong>___</strong>    <strong>_______</strong>    <strong>_________</strong>    <strong>__________________</strong>    <strong>_______________</strong>
+
+      35      11       24          54                0                    0       
+     132       3        6          36                0                    0       
+     132       4        8          36                0                    0       
+     138       9       19          36                0                   28       
+     140       7       15          36                0                    0       
+     147       1        2          36                0                    0       
+     148      11       25          36                0                    0       
+     220      10       22          36                0                    0       
+     237       5       11          54                0                    0       
+     244       2        4          54                0                    0       
+     330       8       17          48                0                    0       
+     330      12       27          36                0                    0       
+     335       3        7          36                0                    0       
+     338       4        9          36                0                    0       
+     380       9       20          36                0                    0       
+     386      11       26          36                0                    3       
+     440       6       13          36                0                    0       
+     457       1        3          42                0                    0       
+     466      10       23          36                0                    0       
+     530       5       12          36                0                    0       
+
+    <strong>Zeit_s</strong>    <strong>Zug</strong>    <strong>Block</strong>    <strong>Eintritt_mps</strong>    <strong>Bremsziel_mps</strong>    <strong>Treffer</strong>
+    <strong>______</strong>    <strong>___</strong>    <strong>_____</strong>    <strong>____________</strong>    <strong>_____________</strong>    <strong>_______</strong>
+
+       3       4       34          19              NaN            0   
+       9      12      104           1              NaN            0   
+      19       6       53           2              NaN            0   
+      31       9       82           3              NaN            0   
+      35       2       12           1              NaN            0   
+      39      10       90           1                0            1   
+      40       7       64           3              NaN            0   
+      45       3       25           5              NaN            0   
+      45       5       43           7              NaN            0   
+      46       8       73           3                1            1   
+      56       1        1           8              NaN            0   
+      67       4       35           6              NaN            0   
+      70      12      105          11              NaN            0   
+      71       2       13           9              NaN            0   
+      75       3       26           8              NaN            0   
+      84       1        2           9              NaN            0   
+      86       5       44           6              NaN            0   
+      95       2       14           9              NaN            0   
+      96      11       98           7              NaN            0   
+     100       7       65          10              NaN            0   
+
+Modellprüfungen bestanden. Durchsatz nach Einschwingen: 5.333 Züge/h.
+Blockgrundlage: 117 gerichtete OSM-Signalkandidaten (14.10.2026); betrieblich unbestätigt
+Haltezeitquelle: VBB-GTFS: Median gültiger S41-Zwischenhalte am 14.10.2026; geplante Zeiten, keine Ist-Messungen; je Station +6 s
+Bestanden: konstante Zugzahl, freie Zugkörper, exklusive Blockbelegung, kein Überholen.
+Stationsreihenfolge, Mindesthalte, Bremsreserven und Beschleunigungsgrenzen geprüft.
+Größte Stationsrundung: 0.48 m. Streckengrundlage: OpenStreetMap, S41; lokaler Datenstand 14.10.2026
+Grafiken und Daten gespeichert unter: C:/Users/buethner/Documents/Uni_Master_lokal/ModSim/Modellbildung-und-Simulation/Laboraufgaben/Woche 2/ergebnisse/trafic_flow/test_20261029_143513/einzellauf

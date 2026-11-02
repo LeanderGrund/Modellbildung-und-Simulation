@@ -1,0 +1,10 @@
+Kennzahl,Wert
+Blockeinfahrten geprüft,4607
+Zufallsbremsungen ausgelöst,222
+Bremsende Zugsekunden durch Zufallsbremsung,2025
+Zufällige Stationszusatzhalte mit positiver Dauer,58
+Zugewiesener Zufallszusatz [s],3206
+Beobachteter Zusatzhalt [Zug·s],3206
+Geplanter Stationshalt [Zug·s],35952
+Warten vor gewöhnlich belegtem Block [Zug·s],308
+Bremsende Zugsekunden durch Antizipation,0

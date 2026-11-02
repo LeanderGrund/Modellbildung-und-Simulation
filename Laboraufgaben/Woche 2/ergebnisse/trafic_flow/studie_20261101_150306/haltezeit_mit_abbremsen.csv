@@ -1,0 +1,7 @@
+key,anticipation,train_count,requested_kmh,effective_kmh,extra_dwell_s,probability,throughput_trains_per_h,free_throughput_trains_per_h,departure_count,departure_deficit,free_match,blocked_s_per_train_lap,complete_lap_count,trains_with_complete_laps,mean_complete_lap_s,blocked_train_s_measurement,free_lap_s,phase_shift_s,passed,failure,file,elapsed_s,x
+a1_n1_v80_d0_p0,1,1,80,79.2,0,0,1,1.13457295934447,3,0.403718878033407,1,0,2,1,3173,0,3173,0,1,,lauf_0056.mat,0.9760623,0
+a1_n1_v80_d6_p0,1,1,80,79.2,6,0,1,1.07946026986507,3,0.238380809595202,1,0,2,1,3335,0,3335,0,1,,lauf_0096.mat,0.9674459,6
+a1_n1_v80_d12_p0,1,1,80,79.2,12,0,1,1.02945381755791,3,0.0883614526737206,1,0,2,1,3497,0,3497,0,1,,lauf_0097.mat,0.959106,12
+a1_n1_v80_d18_p0,1,1,80,79.2,18,0,1,0.983875375785734,3,-0.0483738726427987,1,0,2,1,3659,0,3659,0,1,,lauf_0098.mat,0.9564322,18
+a1_n1_v80_d24_p0,1,1,80,79.2,24,0,1,0.942161737764983,3,-0.173514786705051,1,0,2,1,3821,0,3821,0,1,,lauf_0099.mat,1.0057943,24
+a1_n1_v80_d30_p0,1,1,80,79.2,30,0,1,0.903841325633944,3,-0.288476023098168,1,0,2,1,3983,0,3983,0,1,,lauf_0100.mat,1.0221497,30

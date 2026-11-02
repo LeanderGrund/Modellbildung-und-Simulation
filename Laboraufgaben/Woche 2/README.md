@@ -5,6 +5,19 @@ dreiseitige Ausarbeitung steht in
 [`ergebnisse/Ausarbeitung_SBahn2.pdf`](ergebnisse/Ausarbeitung_SBahn2.pdf).
 Eine bearbeitbare Textfassung und alle Diagramme liegen daneben.
 
+## Interaktives Live Script
+
+**`trafic_flow.mlx`** bietet einen Einzellauf und eine Verkehrsstromuntersuchung
+mit nativen Checkboxen und Zahlenfeldern. Es verwendet den lokalen
+Woche-2-Modellkern und speichert Grafiken, Rohdaten und Eingaben in neuen
+Unterordnern von `ergebnisse/trafic_flow/`. Die Untersuchung erzeugt ausschließlich
+eine Heatmap für Zugzahl und Maximalgeschwindigkeit. Die vollständige Bedienung,
+Störungsregeln und Testhinweise stehen in [TRAFIC_FLOW.md](TRAFIC_FLOW.md).
+
+Die erweiterten Zugzahl-, Haltezeit- und Störungsreihen mit blockiertem
+Stillstand je Zugumlauf sind in [TRAFIC_FLOW_STUDIEN.md](TRAFIC_FLOW_STUDIEN.md)
+beschrieben. Sie lassen sich mit `run_trafic_flow_studien` neu berechnen.
+
 ## Start
 
 In MATLAB **`SBahn2.m` ausführen**. Das Skript berechnet beide Aufgaben,
