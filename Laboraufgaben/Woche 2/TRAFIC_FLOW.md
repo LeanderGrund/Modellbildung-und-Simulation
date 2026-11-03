@@ -9,6 +9,20 @@ und geprüft mit R2026a. Es werden nur lokale Strecken- und Fahrplandaten verwen
 Die Checkbox **Verkehrsstromuntersuchung** schaltet zwischen den Betriebsarten um.
 Die übrigen gemeinsamen Eingaben gelten für beide Betriebsarten.
 
+Bei aktiver Untersuchung wählt **X-Achse der Untersuchung** eine von vier Heatmaps:
+
+| X-Achse | Y-Achse | Weitere Festlegung |
+| --- | --- | --- |
+| Maximalgeschwindigkeit | Anzahl der Züge | bisherige Geschwindigkeitsuntersuchung |
+| Störungswahrscheinlichkeit p | Anzahl der Züge | fest 80 km/h Eingabe / 79,2 km/h effektiv; p je Spalte |
+| Antizipationsfaktor beta | Anzahl der Züge | fest 80 km/h Eingabe / 79,2 km/h effektiv; beta je Spalte |
+| Haltezeitzuschlag | Anzahl der Züge | fest 80 km/h Eingabe / 79,2 km/h effektiv; fester GTFS-Zuschlag je Spalte |
+
+Für die beta-Untersuchung wird langsames Abbremsen automatisch aktiviert, auch
+bei ausgeschalteter Checkbox. Der einzelne p-Eingabewert bleibt dabei konstant.
+Bei der p-Untersuchung gilt die Checkbox für langsames Abbremsen weiterhin;
+der p-Bereich ersetzt den einzelnen p-Eingabewert.
+
 | Parameter | Bedeutung |
 | --- | --- |
 | Anzahl der Züge | Zugzahl im Einzellauf; in der Untersuchung gilt der Zugzahlbereich |
@@ -19,13 +33,19 @@ Die übrigen gemeinsamen Eingaben gelten für beide Betriebsarten.
 | Zusätzliche Wartezeit / fester GTFS-Zuschlag [s] | Checkbox aktiviert einen festen Zuschlag auf jeden geplanten Stationshalt |
 | Geschwindigkeit Minimum / Maximum / Schritt [km/h] | Geschwindigkeitsbereich der Untersuchung, innerhalb 3,6 bis 80 km/h |
 | Zugzahl Minimum / Maximum / Schritt | Ganzzahlige Zugzahlen der Untersuchung |
+| p Minimum / Maximum / Schritt | Bereich von 0 bis 1, nur für die p-Untersuchung |
+| beta Minimum / Maximum / Schritt [1/s] | Positiver beta-Bereich, nur für die beta-Untersuchung |
+| Haltezuschlag Minimum / Maximum / Schritt [s] | Ganzzahliger fester Zuschlag je Station, nur für die Haltezuschlag-Untersuchung |
 
 Fest eingestellt sind reale Ringbahn S41, geografische Darstellung,
 Beschleunigen und Bremsen mit höchstens ±1 m/s², OSM-Signalabschnitte,
 GTFS-Stationshalte, 0,05 s Bildpause, 10 Schritte Bildabstand, Zufallsstartwert 42,
 148 m Zuglänge und das Raster Δx = 1 m / Δt = 1 s. Der eingetragene
 Zielblockabstand von 500 m ist bei OSM-Signalabschnitten ohne Wirkung.
-Der Einzellauf verwendet 80 km/h Eingabe, entsprechend 22 m/s = 79,2 km/h.
+Der Einzellauf sowie die p-, beta- und Haltezuschlag-Untersuchung verwenden 80 km/h Eingabe,
+entsprechend 22 m/s = 79,2 km/h. Der Geschwindigkeitsbereich wirkt ausschließlich
+bei der Untersuchung mit x-Achse Maximalgeschwindigkeit. Ebenso beeinflussen
+die p-, beta- und Haltezuschlag-Bereiche nur die jeweils ausgewählte Untersuchung.
 
 Die Bereichsobergrenzen werden eingeschlossen. Ist der Bereich kein ganzzahliges
 Vielfaches der Schrittweite, ist der letzte Schritt kürzer. Geschwindigkeiten
@@ -81,7 +101,7 @@ werden gespeichert; im Live Script werden höchstens die ersten 20 Zeilen je
 Ereignisprotokoll angezeigt.
 
 In der Untersuchung wird genau **ein Lauf je Kombination** berechnet. Es
-entsteht ausschließlich die Heatmap mit Geschwindigkeit auf der x-Achse,
+entsteht ausschließlich eine Heatmap mit der ausgewählten Größe auf der x-Achse,
 Zugzahl auf der y-Achse und zeitlich gemitteltem Durchsatz als Farbwert.
 Unzulässige Kombinationen, etwa ohne sichere Startbelegung, werden grau/NaN
 mit Fehlergrund gespeichert. Sie werden nicht als Nulldurchsatz interpretiert.
@@ -97,9 +117,33 @@ Jeder Lauf bekommt einen neuen Ordner unter `ergebnisse/trafic_flow/`:
 - Einzellauf: CSV-Tabellen für Parameter, Kennzahlen, Stationen, GTFS-Vergleich,
   Störungen, Stationsereignisse und sämtliche Blockeinfahrten;
 - Untersuchung: `verkehrsstrom.csv` und `laeufe/*.mat` mit den vollständigen
-  Einzelläufen und ihren tatsächlich verwendeten Konfigurationen.
+  Einzelläufen und ihren tatsächlich verwendeten Konfigurationen. Die CSV enthält
+  zusätzlich `x_value`, `probability`, `beta`, `anticipation` und `extra_dwell_s`, damit jeder Punkt
+  eindeutig seinen tatsächlichen Parametern zugeordnet ist.
+
+Für `studyAxis = "Haltezeitzuschlag"` legen
+`dwellMinimumSeconds`, `dwellMaximumSeconds` und `dwellStepSeconds` einen
+festen Zuschlag auf jeden GTFS-Stationshalt fest. Dieser Bereich ersetzt
+den einzelnen Wartezeitzuschlag unabhängig von dessen Checkbox. Geschwindigkeit
+bleibt 80 km/h; p, beta und die Checkbox für langsames Abbremsen bleiben konstant.
+Die ausgelieferte `.mlx` enthält diese vierte Auswahl und die drei zugehörigen
+Zahlenfelder; der von MATLAB importierte Code wurde mit sechs kurzen Punkten geprüft.
 
 ## Gespeicherte Tests
+
+Die [gemeinsame PDF mit fünf Heatmaps](ergebnisse/trafic_flow/vergleich_20261102_b7d516/Verkehrsstrom_Gesamtvergleich.pdf)
+enthält die Wiederholungen bei beta = 0,20 und p = 0,3 sowie die neue
+Haltezuschlag-Untersuchung. Alle 216 neuen und 168 bisherigen Diagrammpunkte
+sind anhand ihrer Rohdaten geprüft. Die neue Halteachse wurde zusätzlich über
+den von MATLAB importierten Live-Script-Code mit sechs kurzen Punkten getestet.
+Details stehen in [TRAFIC_FLOW_VERGLEICH.md](TRAFIC_FLOW_VERGLEICH.md).
+
+Die [PDF zu den neuen p- und beta-Heatmaps](ergebnisse/trafic_flow/heatmaps_20261102_aaeb14/Verkehrsstrom_p_und_beta.pdf)
+dokumentiert 88 Kombinationen aus Zugzahl und p sowie 80 Kombinationen aus
+Zugzahl und beta. Der Test führt dafür den tatsächlich gespeicherten
+Live-Script-Code aus. Wiederholen mit
+`addpath('tools'); test_neue_verkehrsstromuntersuchungen` und anschließend
+`py tools/bericht_neue_verkehrsstromuntersuchungen.py <Ausgabeordner>`.
 
 Der [Testbericht vom 29.10.2026](ergebnisse/trafic_flow/test_20261029_143513/TESTBERICHT.md)
 dokumentiert 78 bestandene Modelltests, beide ausgeführten Betriebsarten und
@@ -128,8 +172,20 @@ Für programmgesteuerte Läufe können `trafic_flow_defaults` und
 ```matlab
 eingaben = trafic_flow_defaults;
 eingaben.study = true;
+eingaben.studyAxis = "Störungswahrscheinlichkeit p";
 ergebnis = run_trafic_flow(eingaben);
 ```
+
+Für umfangreiche Batchläufe auf Windows kann
+`run_trafic_flow(eingaben,parallel=true,workers=4)` vier unabhängige lokale
+MATLAB-Basissitzungen verwenden. Die Parallel Computing Toolbox wird dafür
+nicht benötigt. Jeder Lauf verwendet weiterhin seinen eigenen Zufallsstrom.
+Mit `resume=true` und demselben `outputFolder` werden vorhandene, erfolgreich
+geprüfte Läufe nur bei identischer vollständiger Modellkonfiguration und
+identischem Einschwing-/Messfenster übernommen. Dadurch kann derselbe physische
+Lauf auch in einer anderen Untersuchungsachse erscheinen. Die ursprünglichen
+Eingaben bleiben in den Rohdaten erhalten. Die normale Bedienung des Live
+Scripts bleibt sequentiell.
 
 ## Quelltext und Live-Script-Erzeugung
 

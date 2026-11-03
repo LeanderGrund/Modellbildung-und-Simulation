@@ -19,6 +19,7 @@ ET.register_namespace("mc", MC)
 
 CONTROLS = {
     "verkehrsstromuntersuchung": ("Verkehrsstromuntersuchung", None),
+    "untersuchungsachse": ("X-Achse der Untersuchung", ["Maximalgeschwindigkeit", "Störungswahrscheinlichkeit p", "Antizipationsfaktor beta", "Haltezeitzuschlag"]),
     "anzahlZuege": ("Anzahl der Züge (Einzellauf)", (1, 200, 1)),
     "einschwingzeitMinuten": ("Einschwingzeit [min]", (0, 1440, 1)),
     "messdauerMinuten": ("Messdauer [min]", (1, 1440, 1)),
@@ -34,6 +35,15 @@ CONTROLS = {
     "zugzahlMinimum": ("Zugzahl Minimum", (1, 200, 1)),
     "zugzahlMaximum": ("Zugzahl Maximum", (1, 200, 1)),
     "zugzahlSchritt": ("Zugzahl Schritt", (1, 200, 1)),
+    "pMinimum": ("p Minimum", (0, 1, 0.01)),
+    "pMaximum": ("p Maximum", (0, 1, 0.01)),
+    "pSchritt": ("p Schritt", (0.001, 1, 0.01)),
+    "betaMinimum": ("beta Minimum [1/s]", (0.001, 10, 0.05)),
+    "betaMaximum": ("beta Maximum [1/s]", (0.001, 10, 0.05)),
+    "betaSchritt": ("beta Schritt [1/s]", (0.001, 10, 0.05)),
+    "haltezuschlagMinimumSekunden": ("Haltezuschlag Minimum [s]", (0, 3600, 1)),
+    "haltezuschlagMaximumSekunden": ("Haltezuschlag Maximum [s]", (0, 3600, 1)),
+    "haltezuschlagSchrittSekunden": ("Haltezuschlag Schritt [s]", (1, 3600, 1)),
 }
 ROWS = [
     ("Parameter", "Fest / variabel", "Bedeutung / Wert"),
@@ -42,13 +52,16 @@ ROWS = [
     ("Blocksteuerung / Zielabstand", "fest", "OSM-Signalabschnitte; 500 m ohne Wirkung bei OSM"),
     ("Haltezeitmodell", "fest", "GTFS-Stationshalte, stationsabhängig"),
     ("Bildpause / Bildabstand", "fest", "0,05 s / 10 Simulationsschritte; nur Wiedergabe"),
-    ("Maximalgeschwindigkeit", "fest im Einzellauf", "80 km/h eingegeben → 79,2 km/h effektiv"),
+    ("Maximalgeschwindigkeit", "fest außer Geschwindigkeitsstudie", "80 km/h eingegeben → 79,2 km/h effektiv"),
     ("Betriebsart / Zugzahl", "variabel", "Checkbox Untersuchung; Zugzahl im Einzellauf"),
     ("Einschwingzeit / Messdauer", "variabel", "Minuten; Durchsatz nur nach Einschwingen"),
     ("p / Zeitspanne", "variabel", "p ∈ [0,1] für beide Störungen; Zufallszusatz 0…Zeitspanne s"),
     ("Langsames Abbremsen / beta", "variabel", "Checkbox; beta [1/s] für Anpassung an langsameren Vorgänger"),
     ("Zusätzliche Wartezeit", "variabel", "Checkbox + fester Zuschlag [s] auf jeden GTFS-Halt"),
-    ("Untersuchungsbereiche", "variabel", "Geschwindigkeit und Zugzahl: Minimum / Maximum / Schritt"),
+    ("Untersuchungsachse", "variabel", "Geschwindigkeit, Störungswahrscheinlichkeit p, beta oder Haltezeitzuschlag"),
+    ("Haltezuschlag-Untersuchung", "variabel", "Fester Zuschlag auf jeden GTFS-Halt; p und beta bleiben konstant"),
+    ("Untersuchungsbereiche", "variabel", "Je Achse und Zugzahl: Minimum / Maximum / Schritt"),
+    ("beta-Untersuchung", "automatisch", "Langsames Abbremsen aktiv; p bleibt konstant"),
     ("Zufallsstartwert", "fest", "42; reproduzierbare Läufe"),
 ]
 
@@ -91,14 +104,22 @@ for paragraph in list(document.iter(f"{{{W}}}p")):
     if style is None or style.get(f"{{{W}}}val") != "code":
         continue
     for name, (label, limits) in CONTROLS.items():
-        match = re.search(rf"(?m)^{name} = (?P<value>true|false|[0-9.]+);", code)
+        match = re.search(rf'(?m)^{name} = (?P<value>true|false|[0-9.]+|"[^"\n]*");', code)
         if not match:
             continue
         literal = match["value"]
         value = json.loads(literal)
         data = {"text": label, "value": value, "executionModel": "Nothing", "defaultValue": value}
         context = {"data": data}
-        if limits is None:
+        if isinstance(limits, list):
+            context["type"] = "comboBox"
+            data["value"] = literal
+            data["defaultValue"] = literal
+            data["items"] = [{"label": json.dumps(item, ensure_ascii=False),
+                              "value": json.dumps(item, ensure_ascii=False)} for item in limits]
+            data["itemLabels"] = limits
+            data["linkedVariable"] = ""
+        elif limits is None:
             context["type"] = "checkBox"
             data["defaultValueLinkedVariable"] = ""
         else:
@@ -106,7 +127,8 @@ for paragraph in list(document.iter(f"{{{W}}}p")):
                         minLinkedVariable="", maxLinkedVariable="", stepLinkedVariable="",
                         defaultValueLinkedVariable="")
         alternate = ET.SubElement(paragraph, f"{{{MC}}}AlternateContent")
-        choice = ET.SubElement(alternate, f"{{{MC}}}Choice", {"Requires": "R2019a" if limits is None else "R2022b"})
+        release = "R2018a" if isinstance(limits, list) else "R2019a" if limits is None else "R2022b"
+        choice = ET.SubElement(alternate, f"{{{MC}}}Choice", {"Requires": release})
         custom = sub(choice, "customXml", element="livecontrol")
         properties = sub(custom, "customXmlPr")
         line = code.count("\n", 0, match.start("value"))
@@ -114,7 +136,7 @@ for paragraph in list(document.iter(f"{{{W}}}p")):
         attributes = {"context": json.dumps(context, ensure_ascii=False, separators=(",", ":")),
                       "text": literal, "startOffsetLine": line, "startColumn": column,
                       "endOffsetLine": line, "endColumn": column + len(literal)}
-        if limits is not None:
+        if isinstance(limits, tuple):
             attributes["className"] = "SpinnerControlNode"
         for key, val in attributes.items():
             sub(properties, "attr", name=key, val=val)

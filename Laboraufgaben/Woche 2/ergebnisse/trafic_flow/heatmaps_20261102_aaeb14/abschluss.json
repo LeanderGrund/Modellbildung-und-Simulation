@@ -1,0 +1,11 @@
+{
+  "complete": true,
+  "newSimulations": 168,
+  "newFigures": 2,
+  "rangeValidationPassed": true,
+  "parallelEquivalencePassed": true,
+  "parallelEquivalenceCases": 4,
+  "parallelWorkers": 4,
+  "legacyAxisRechecked": true,
+  "regressionFolder": "ergebnisse/trafic_flow/test_20261102_105829"
+}

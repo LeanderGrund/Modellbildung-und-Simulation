@@ -1,5 +1,17 @@
 # Gespeicherte trafic_flow-Tests
 
+Die [gemeinsame PDF mit fünf Heatmaps](vergleich_20261102_b7d516/Verkehrsstrom_Gesamtvergleich.pdf)
+enthält die Wiederholungen bei beta = 0,20 beziehungsweise p = 0,3, die neue
+Haltezuschlag-Heatmap und die beiden bisherigen Vergleichsreihen. Alle 216 neuen
+und 168 bisherigen Diagrammpunkte sind aus den gespeicherten Positionen geprüft.
+Parameter, Quelldateien und Wiederaufnahme stehen in
+[`STATUS.md`](vergleich_20261102_b7d516/STATUS.md).
+
+Die [neuen p- und beta-Heatmaps bei 80 km/h](heatmaps_20261102_aaeb14/Verkehrsstrom_p_und_beta.pdf)
+sind mit Parametern und vollständigen Durchsatzwerten dokumentiert. Die beiden
+Unterordner `zugzahl_p/` und `zugzahl_beta/` enthalten CSV, MAT-Rohdaten sowie
+die jeweiligen Grafiken als PNG und FIG.
+
 Die erweiterten [Versuchsreihen vom 01.11.2026 als PDF](studie_20261101_150306/Verkehrsfluss_Untersuchungen.pdf)
 enthalten Zugzahl-, Haltezeit- und Störungsreihen für beide Fahrweisen sowie
 die Heatmap mit langsamem Abbremsen. Parameter, Zahlenwerte und blockierter

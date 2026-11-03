@@ -1,0 +1,15 @@
+{
+  "complete": true,
+  "pdf": "Verkehrsstrom_Gesamtvergleich.pdf",
+  "pages": 11,
+  "auditedDiagramPoints": 384,
+  "successfulNewDiagramPoints": 216,
+  "newSimulations": 200,
+  "sharedPointUses": 16,
+  "heatmaps": 5,
+  "parameterPages": 1,
+  "valueTables": 5,
+  "nativeControls": 26,
+  "modelFilesUnchanged": 21,
+  "pdfSha256": "2885b788cb78b0949939599cc8473144bf515ebd31d357068221a5879980118c"
+}

@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "newPoints": 216,
+  "baselinePoints": 168,
+  "newUniqueConfigurations": 200,
+  "newSuccessfulPoints": 216,
+  "sharedIntersectionsChecked": true,
+  "axisAndCacheChecksPassed": true,
+  "nativeLiveScriptChecked": true
+}

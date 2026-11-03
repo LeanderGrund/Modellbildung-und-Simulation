@@ -7,6 +7,10 @@ arguments
     runtime.animate (1,1) logical = true
     runtime.makeFigures (1,1) logical = true
     runtime.outputFolder (1,1) string = ""
+    runtime.progress (1,1) logical = false
+    runtime.parallel (1,1) logical = false
+    runtime.workers (1,1) double {mustBeInteger,mustBePositive} = 4
+    runtime.resume (1,1) logical = false
 end
 root = fileparts(mfilename('fullpath'));
 addpath(fullfile(root,'modell'));
@@ -18,9 +22,11 @@ if runtime.outputFolder == ""
     runtime.outputFolder = fullfile(root,'ergebnisse','trafic_flow',stamp+"_"+mode);
 end
 out = runtime.outputFolder;
-assert(~isfolder(out) || isempty(dir(fullfile(out,'*.mat'))), ...
+assert(~isfolder(out) || isempty(dir(fullfile(out,'*.mat'))) || runtime.resume, ...
     'TrafficFlow:ExistingRun','Dieser Ordner enthält bereits einen gespeicherten Lauf.');
 if ~isfolder(out), mkdir(out); end
+[~,outInfo] = fileattrib(out);
+out = string(outInfo.Name);
 diagrams = fullfile(out,'grafiken');
 if ~isfolder(diagrams), mkdir(diagrams); end
 c = sbahn2.defaultConfig;
@@ -41,7 +47,8 @@ c.randomStopEnabled = true;
 c.randomStopProbability = settings.probability;
 c.randomStopMinSeconds = 0;
 c.randomStopMaxSeconds = settings.randomHoldMaxSeconds;
-c.anticipationEnabled = settings.anticipationEnabled;
+c.anticipationEnabled = settings.anticipationEnabled || ...
+    (settings.study && settings.studyAxis == "Antizipationsfaktor beta");
 c.anticipationBeta = settings.beta;
 c.dwellOffsetSeconds = double(settings.extraWaitEnabled)*settings.extraWaitSeconds;
 c.randomSeed = settings.randomSeed;
@@ -81,42 +88,96 @@ if ~settings.study
     fprintf('Größte Stationsrundung: %g m. Streckengrundlage: %s\n', ...
         report.maxStationRoundingMeters,p.route.source);
 else
-    % Unterschiedliche Eingaben derselben Rasterstufe werden nur einmal simuliert.
-    requested = inclusiveRange(settings.speedMinimumKmh,settings.speedStepKmh,settings.speedMaximumKmh);
-    levels = floor(requested/3.6+1e-10);
-    [levels,indices] = unique(levels,'stable');
-    requested = requested(indices);
-    effective = levels*3.6;
+    % Die gewählte x-Achse bestimmt genau einen veränderlichen Parameter.
+    % Bei p, beta und Haltezuschlag ist die Vorgabe fest 80 km/h.
+    switch settings.studyAxis
+        case "Maximalgeschwindigkeit"
+            requested = inclusiveRange(settings.speedMinimumKmh,settings.speedStepKmh,settings.speedMaximumKmh);
+            levels = floor(requested/3.6+1e-10);
+            [levels,indices] = unique(levels,'stable');
+            requested = requested(indices);
+            xValues = levels*3.6;
+            axisLabel = 'Effektive Maximalgeschwindigkeit [km/h]';
+            tickLabels = compose('%.1f',xValues);
+        case "Störungswahrscheinlichkeit p"
+            xValues = inclusiveRange(settings.probabilityMinimum,settings.probabilityStep,settings.probabilityMaximum);
+            axisLabel = 'Störungswahrscheinlichkeit p je Prüfung';
+            tickLabels = compose('%.2f',xValues);
+        case "Antizipationsfaktor beta"
+            xValues = inclusiveRange(settings.betaMinimum,settings.betaStep,settings.betaMaximum);
+            axisLabel = 'Antizipationsfaktor beta [1/s]';
+            tickLabels = compose('%.2f',xValues);
+        case "Haltezeitzuschlag"
+            xValues = inclusiveRange(settings.dwellMinimumSeconds,settings.dwellStepSeconds,settings.dwellMaximumSeconds);
+            axisLabel = 'Fester Haltezeitzuschlag je Station [s]';
+            tickLabels = compose('%g',xValues);
+    end
     trains = inclusiveRange(settings.trainMinimum,settings.trainStep,settings.trainMaximum);
-    throughput = nan(numel(trains),numel(levels));
+    throughput = nan(numel(trains),numel(xValues));
     runs = table();
     runFolder = fullfile(out,'laeufe'); mkdir(runFolder);
+    configurations = cell(numel(throughput),1);
+    files = cell(numel(throughput),1);
+    itemX = zeros(numel(throughput),1);
     for row = 1:numel(trains)
-        for column = 1:numel(levels)
+        for column = 1:numel(xValues)
             c.trainCount = trains(row);
-            c.cruiseSpeedKmh = requested(column);
-            c.animate = false;
-            passed = false; failure = ""; detected = NaN;
-            file = sprintf('n_%03d_v_%02d.mat',trains(row),levels(column));
-            try
-                [G,p,report] = sbahn2.simulate(c);
-                metrics = measure(G,p,settings);
-                throughput(row,column) = metrics.throughputTrainsPerHour;
-                detected = metrics.departureCount;
-                passed = report.checksPassed;
-                save(fullfile(runFolder,file),'G','p','report','metrics','settings','-v7');
-            catch exception
-                failure = string(exception.identifier)+": "+string(exception.message);
-                % Unzulässige Belegungen sind keine gemessenen Null-Durchsätze.
-                save(fullfile(runFolder,file),'c','failure','settings');
+            switch settings.studyAxis
+                case "Maximalgeschwindigkeit"
+                    c.cruiseSpeedKmh = requested(column);
+                    file = sprintf('n_%03d_v_%02d.mat',trains(row),levels(column));
+                case "Störungswahrscheinlichkeit p"
+                    c.cruiseSpeedKmh = 80;
+                    c.randomBrakeProbability = xValues(column);
+                    c.randomStopProbability = xValues(column);
+                    file = sprintf('n_%03d_p_%03d.mat',trains(row),column);
+                case "Antizipationsfaktor beta"
+                    c.cruiseSpeedKmh = 80;
+                    c.anticipationEnabled = true;
+                    c.anticipationBeta = xValues(column);
+                    file = sprintf('n_%03d_beta_%03d.mat',trains(row),column);
+                case "Haltezeitzuschlag"
+                    c.cruiseSpeedKmh = 80;
+                    c.dwellOffsetSeconds = xValues(column);
+                    file = sprintf('n_%03d_h_%03d.mat',trains(row),xValues(column));
             end
-            runs = [runs;table(requested(column),effective(column),trains(row), ...
-                throughput(row,column),detected,passed,failure,string(file), ...
-                'VariableNames',{'requested_kmh','effective_kmh','train_count', ...
-                'throughput_trains_per_h','departure_count','passed','failure','file'})]; %#ok<AGROW>
+            c.animate = false;
+            index = (row-1)*numel(xValues)+column;
+            configurations{index} = c; files{index} = file; itemX(index) = xValues(column);
         end
     end
-    result.effectiveSpeedsKmh = effective;
+    entries = cell(numel(throughput),1);
+    if runtime.parallel
+        [workers,statusFiles] = startStudyWorkers(configurations,settings,runFolder,files, ...
+            itemX,runtime.resume,runtime.workers,out,@studyCase);
+        cleanupWorkers = onCleanup(@() closeStudyWorkers(workers)); %#ok<NASGU>
+    end
+    for done = 1:numel(entries)
+        if runtime.parallel
+            [index,entry] = fetchStudyWorker(workers,statusFiles,entries);
+        else
+            index = done;
+            entry = studyCase(configurations{index},settings,runFolder,files{index},itemX(index),runtime.resume);
+        end
+        entries{index} = entry;
+        row = floor((index-1)/numel(xValues))+1;
+        column = mod(index-1,numel(xValues))+1;
+        throughput(row,column) = entry.throughput_trains_per_h;
+        runs = vertcat(entries{~cellfun(@isempty,entries)});
+        if runtime.progress
+            writetable(runs,fullfile(out,'verkehrsstrom.csv'));
+            fprintf('%s: %g/%g | N=%g | x=%.3g | Q=%.3f Züge/h | bestanden=%s | übernommen=%s\n', ...
+                settings.studyAxis,done,numel(throughput),entry.train_count,entry.x_value, ...
+                entry.throughput_trains_per_h,string(entry.passed),string(entry.reused));
+        end
+    end
+    result.studyAxis = settings.studyAxis;
+    result.xValues = xValues;
+    if settings.studyAxis == "Maximalgeschwindigkeit"
+        result.effectiveSpeedsKmh = xValues;
+    else
+        result.effectiveSpeedsKmh = 79.2;
+    end
     result.trainCounts = trains;
     result.throughput = throughput;
     result.runs = runs;
@@ -124,22 +185,33 @@ else
     if runtime.makeFigures
         figures = figure('Name','Verkehrsstromuntersuchung','Color','w','Position',[100 100 950 570]);
         ax = axes(figures);
-        chart = imagesc(ax,1:numel(effective),1:numel(trains),throughput);
+        chart = imagesc(ax,1:numel(xValues),1:numel(trains),throughput);
         chart.AlphaData = isfinite(throughput);
         ax.Color = [0.8 0.8 0.8]; ax.YDir = 'normal';
-        ax.XTick = 1:numel(effective); ax.XTickLabel = compose('%.1f',effective);
+        ax.XTick = 1:numel(xValues); ax.XTickLabel = tickLabels;
         ax.YTick = 1:numel(trains); ax.YTickLabel = string(trains);
-        xlabel(ax,'Effektive Maximalgeschwindigkeit [km/h]');
+        xlabel(ax,axisLabel);
         ylabel(ax,'Anzahl der Züge');
         colormap(ax,parula);
         cb = colorbar(ax); cb.Label.String = 'Durchschnittlicher Durchsatz [Züge/h]';
-        title(ax,{'Verkehrsstrom nach der Einschwingzeit', ...
-            sprintf('Einschwingen %g min | Messung %g min | p = %g | Antizipation %s', ...
-            settings.warmupMinutes,settings.measurementMinutes,settings.probability, ...
-            string(settings.anticipationEnabled))});
+        note = "v-Eingabe 80 km/h, effektiv 79,2 km/h";
+        if settings.studyAxis == "Maximalgeschwindigkeit", note = "Maximalgeschwindigkeit variabel"; end
+        anticipationText = "aus";
+        if result.baseConfig.anticipationEnabled, anticipationText = "an"; end
+        probabilityText = string(settings.probability);
+        betaText = string(settings.beta)+" 1/s";
+        dwellText = string(result.baseConfig.dwellOffsetSeconds)+" s";
+        if settings.studyAxis == "Störungswahrscheinlichkeit p", probabilityText = "variabel"; end
+        if settings.studyAxis == "Antizipationsfaktor beta", betaText = "variabel"; end
+        if settings.studyAxis == "Haltezeitzuschlag", dwellText = "variabel"; end
+        title(ax,{char("Verkehrsstrom: "+settings.studyAxis),char(note), ...
+            sprintf('Einschwingen %g min | Messung %g min', ...
+            settings.warmupMinutes,settings.measurementMinutes), ...
+            char("p = "+probabilityText+" | beta = "+betaText+" | Antizipation "+anticipationText), ...
+            char("Haltezeitzuschlag: "+dwellText)});
         if numel(throughput) <= 100
             for row = 1:numel(trains)
-                for column = 1:numel(effective)
+                for column = 1:numel(xValues)
                     value = throughput(row,column);
                     label = sprintf('%.2f',value);
                     if isnan(value), label = 'ungültig'; end
@@ -165,11 +237,71 @@ writeRunNote(result);
 result.figures = figures; % Handles gehören nicht in die gespeicherte MAT-Datei.
 end
 
+function [workers,statusFiles] = startStudyWorkers(configurations,settings,runFolder,files,x,resume,count,out,task)
+%STARTSTUDYWORKERS Separate lokale Basissitzungen ohne Toolbox-Abhängigkeit.
+assert(ispc,'TrafficFlow:ParallelPlatform','Die lokale Mehrprozessausführung ist für Windows vorgesehen.');
+root = fileparts(mfilename('fullpath'));
+jobsRoot = fullfile(out,'parallel_jobs'); if ~isfolder(jobsRoot), mkdir(jobsRoot); end
+jobs = string(tempname(jobsRoot)); mkdir(jobs);
+statusFiles = fullfile(jobs,compose('task_%04d.mat',(1:numel(configurations))'));
+count = min(count,numel(configurations)); workers = cell(1,count);
+for worker = 1:count
+    indices = worker:count:numel(configurations);
+    spec = struct('indices',indices,'settings',settings,'runFolder',runFolder, ...
+        'resume',resume,'task',task);
+    spec.configurations = configurations(indices); spec.files = files(indices);
+    spec.x = x(indices); spec.statusFiles = statusFiles(indices);
+    specFile = fullfile(jobs,sprintf('worker_%02d_spec.mat',worker));
+    save(specFile,'spec','-v7');
+    logFile = fullfile(jobs,sprintf('worker_%02d.log',worker));
+    expression = sprintf('addpath(''%s''); trafic_flow_parallel_worker(''%s'');', ...
+        strrep(root,'''',''''''),strrep(char(specFile),'''',''''''));
+    info = System.Diagnostics.ProcessStartInfo;
+    info.FileName = fullfile(matlabroot,'bin','matlab.exe');
+    info.Arguments = sprintf('-batch "%s" -logfile "%s"',expression,logFile);
+    info.WorkingDirectory = root;
+    info.UseShellExecute = false; info.CreateNoWindow = true;
+    info.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+    workers{worker} = System.Diagnostics.Process.Start(info);
+end
+end
+
+function [index,entry] = fetchStudyWorker(workers,statusFiles,entries)
+while true
+    ready = find(cellfun(@isempty,entries) & isfile(statusFiles),1);
+    if ~isempty(ready)
+        try
+            item = load(statusFiles(ready),'entry');
+            entry = item.entry; index = ready; return;
+        catch
+            % Die Statusdatei kann während eines kurzen Schreibvorgangs sichtbar sein.
+        end
+    end
+    alive = cellfun(@(p) ~p.HasExited,workers);
+    assert(any(alive),'TrafficFlow:WorkerFailed', ...
+        'Ein Arbeitsprozess hat keine gültige Statusdatei hinterlassen. Details stehen unter parallel_jobs/.');
+    pause(0.25);
+end
+end
+
+function closeStudyWorkers(workers)
+for index = 1:numel(workers)
+    try
+        if ~workers{index}.HasExited, workers{index}.WaitForExit(10000); end
+        workers{index}.Close();
+    catch
+    end
+end
+end
+
 function settings = validatedSettings(input)
 settings = trafic_flow_defaults;
 names = fieldnames(input);
 assert(all(ismember(names,fieldnames(settings))),'TrafficFlow:Setting','Unbekannte Einstellung.');
 for k = 1:numel(names), settings.(names{k}) = input.(names{k}); end
+assert(isstring(settings.studyAxis) && isscalar(settings.studyAxis) && ...
+    ismember(settings.studyAxis,["Maximalgeschwindigkeit","Störungswahrscheinlichkeit p", ...
+    "Antizipationsfaktor beta","Haltezeitzuschlag"]),'TrafficFlow:StudyAxis','Ungültige Untersuchungsachse.');
 for name = ["study","anticipationEnabled","extraWaitEnabled"]
     validateattributes(settings.(name),{'logical'},{'scalar'});
 end
@@ -179,6 +311,10 @@ end
 for name = ["randomHoldMaxSeconds","extraWaitSeconds","randomSeed"]
     validateattributes(settings.(name),{'numeric'},{'scalar','real','finite','integer','nonnegative'});
 end
+for name = ["dwellMinimumSeconds","dwellMaximumSeconds"]
+    validateattributes(settings.(name),{'numeric'},{'scalar','real','finite','integer','nonnegative'});
+end
+validateattributes(settings.dwellStepSeconds,{'numeric'},{'scalar','real','finite','integer','positive'});
 validateattributes(settings.randomSeed,{'numeric'},{'<=',2^32-1});
 validateattributes(settings.warmupMinutes,{'numeric'},{'scalar','real','finite','nonnegative'});
 validateattributes(settings.measurementMinutes,{'numeric'},{'scalar','real','finite','positive'});
@@ -187,12 +323,22 @@ assert(all(abs([settings.warmupMinutes settings.measurementMinutes]*60- ...
     'TrafficFlow:TimeGrid','Einschwingzeit und Messdauer müssen ganze Sekunden ergeben.');
 validateattributes(settings.probability,{'numeric'},{'scalar','real','finite','>=',0,'<=',1});
 validateattributes(settings.beta,{'numeric'},{'scalar','real','finite','positive'});
+for name = ["probabilityMinimum","probabilityMaximum"]
+    validateattributes(settings.(name),{'numeric'},{'scalar','real','finite','>=',0,'<=',1});
+end
+for name = ["probabilityStep","betaMinimum","betaMaximum","betaStep"]
+    validateattributes(settings.(name),{'numeric'},{'scalar','real','finite','positive'});
+end
 for name = ["speedMinimumKmh","speedMaximumKmh"]
     validateattributes(settings.(name),{'numeric'},{'scalar','real','finite','>=',3.6,'<=',80});
 end
 validateattributes(settings.speedStepKmh,{'numeric'},{'scalar','real','finite','positive'});
 assert(settings.speedMinimumKmh <= settings.speedMaximumKmh && ...
-    settings.trainMinimum <= settings.trainMaximum,'TrafficFlow:Range','Bereichsgrenzen sind vertauscht.');
+    settings.trainMinimum <= settings.trainMaximum && ...
+    settings.probabilityMinimum <= settings.probabilityMaximum && ...
+    settings.betaMinimum <= settings.betaMaximum && ...
+    settings.dwellMinimumSeconds <= settings.dwellMaximumSeconds, ...
+    'TrafficFlow:Range','Bereichsgrenzen sind vertauscht.');
 end
 
 function values = inclusiveRange(first,step,last)
@@ -210,6 +356,46 @@ metrics = struct('departureCount',nnz(detected), ...
     'warmupSeconds',start,'measurementSeconds',finish-start, ...
     'meanSpeedKmh',mean(G.velocity(rows,:),'all')*p.speedUnitKmh, ...
     'blockedTrainSeconds',sum(G.blocked(find(rows)+1,:),'all')*p.stepSeconds);
+end
+
+function entry = studyCase(c,settings,runFolder,file,xValue,resume)
+%STUDYCASE Ein unabhängiger Lauf; eigener lokaler Zufallsstrom im Modellkern.
+passed = false; failure = ""; detected = NaN; value = NaN; reused = false;
+effective = floor(c.cruiseSpeedKmh/3.6+1e-10)*3.6;
+path = fullfile(runFolder,file);
+try
+    if resume && isfile(path)
+        try
+            previous = load(path);
+        catch
+            previous = struct; % Ein unterbrochener Schreibvorgang wird neu berechnet.
+        end
+        if all(isfield(previous,{'G','p','report','metrics','settings'}))
+            assert(isequaln(previous.p.config,c) && ...
+                previous.settings.warmupMinutes == settings.warmupMinutes && ...
+                previous.settings.measurementMinutes == settings.measurementMinutes, ...
+                'TrafficFlow:ResumeMismatch','Gespeicherter Lauf hat andere Einstellungen.');
+            assert(previous.report.checksPassed,'TrafficFlow:ResumeChecks','Gespeicherter Lauf ist ungeprüft.');
+            G = previous.G; p = previous.p; report = previous.report; metrics = previous.metrics;
+            reused = true;
+        end
+    end
+    if ~reused
+        [G,p,report] = sbahn2.simulate(c);
+        metrics = measure(G,p,settings);
+        save(path,'G','p','report','metrics','settings','-v7');
+    end
+    value = metrics.throughputTrainsPerHour; detected = metrics.departureCount;
+    passed = report.checksPassed;
+catch exception
+    failure = string(exception.identifier)+": "+string(exception.message);
+    if strcmp(exception.identifier,'TrafficFlow:ResumeMismatch'), rethrow(exception); end
+    save(path,'c','failure','settings');
+end
+entry = table(c.cruiseSpeedKmh,effective,c.trainCount,value,detected,passed,failure,string(file), ...
+    xValue,c.randomStopProbability,c.anticipationBeta,c.anticipationEnabled,c.dwellOffsetSeconds,reused, ...
+    'VariableNames',{'requested_kmh','effective_kmh','train_count','throughput_trains_per_h', ...
+    'departure_count','passed','failure','file','x_value','probability','beta','anticipation','extra_dwell_s','reused'});
 end
 
 function tables = singleTables(G,p,r,m,comparison,s)
@@ -294,13 +480,25 @@ s = result.settings;
 fprintf(fid,'# Gespeicherter trafic_flow-Lauf\n\n');
 fprintf(fid,'Erstellt: %s (Europe/Berlin). MATLAB %s.\n\n', ...
     string(datetime('now','TimeZone','Europe/Berlin')),version);
-fprintf(fid,'Einschwingzeit: %g min. Messdauer: %g min. p: %g. Zufallsstartwert: %g.\n\n', ...
-    s.warmupMinutes,s.measurementMinutes,s.probability,s.randomSeed);
-fprintf(fid,'Antizipation: %s, beta = %g 1/s. Fester GTFS-Zuschlag: %g s. Zufallszusatz: U{0,...,%g} s.\n\n', ...
-    string(s.anticipationEnabled),s.beta,result.baseConfig.dwellOffsetSeconds,s.randomHoldMaxSeconds);
+probabilityText = string(s.probability); betaText = string(s.beta)+" 1/s";
+dwellText = string(result.baseConfig.dwellOffsetSeconds)+" s";
+if s.study && s.studyAxis == "Störungswahrscheinlichkeit p", probabilityText = "variabel je Spalte"; end
+if s.study && s.studyAxis == "Antizipationsfaktor beta", betaText = "variabel je Spalte"; end
+if s.study && s.studyAxis == "Haltezeitzuschlag", dwellText = "variabel je Spalte"; end
+fprintf(fid,'Einschwingzeit: %g min. Messdauer: %g min. p: %s. Zufallsstartwert: %g.\n\n', ...
+    s.warmupMinutes,s.measurementMinutes,probabilityText,s.randomSeed);
+fprintf(fid,'Antizipation: %s, beta = %s. Fester GTFS-Zuschlag: %s. Zufallszusatz: U{0,...,%g} s.\n\n', ...
+    string(result.baseConfig.anticipationEnabled),betaText,dwellText,s.randomHoldMaxSeconds);
 fprintf(fid,'Durchsatz: Abfahrten an Station 1 im halboffenen Messfenster [%g,%g) s, geteilt durch Messdauer in Stunden.\n\n', ...
     s.warmupMinutes*60,(s.warmupMinutes+s.measurementMinutes)*60);
 if s.study
+    fprintf(fid,'X-Achse: %s; y-Achse: Anzahl der Züge.\n\n',s.studyAxis);
+    if s.studyAxis ~= "Maximalgeschwindigkeit"
+        fprintf(fid,'Geschwindigkeitsvorgabe fest 80 km/h, effektiv 79,2 km/h.\n\n');
+    end
+    if s.studyAxis == "Antizipationsfaktor beta"
+        fprintf(fid,'Langsames Abbremsen ist für die beta-Untersuchung automatisch aktiv; beta wird je Spalte gesetzt.\n\n');
+    end
     fprintf(fid,'Verkehrsstromuntersuchung: %g Kombinationen, davon %g bestanden. Genau ein Lauf je Kombination.\n\n', ...
         height(result.runs),nnz(result.runs.passed));
     fprintf(fid,'CSV und MAT enthalten die Heatmapwerte. Vollständige Einzelläufe unter laeufe/. Ungültige Kombinationen sind NaN, nicht null.\n\n');

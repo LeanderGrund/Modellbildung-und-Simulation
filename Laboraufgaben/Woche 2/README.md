@@ -11,12 +11,23 @@ Eine bearbeitbare Textfassung und alle Diagramme liegen daneben.
 mit nativen Checkboxen und Zahlenfeldern. Es verwendet den lokalen
 Woche-2-Modellkern und speichert Grafiken, Rohdaten und Eingaben in neuen
 Unterordnern von `ergebnisse/trafic_flow/`. Die Untersuchung erzeugt ausschließlich
-eine Heatmap für Zugzahl und Maximalgeschwindigkeit. Die vollständige Bedienung,
+eine Heatmap der Zugzahl über Maximalgeschwindigkeit, Störungswahrscheinlichkeit,
+beta oder Haltezeitzuschlag. Bei p, beta und Haltezuschlag bleibt die Vorgabe
+fest 80 km/h (effektiv 79,2 km/h).
+Die vollständige Bedienung,
 Störungsregeln und Testhinweise stehen in [TRAFIC_FLOW.md](TRAFIC_FLOW.md).
 
 Die erweiterten Zugzahl-, Haltezeit- und Störungsreihen mit blockiertem
 Stillstand je Zugumlauf sind in [TRAFIC_FLOW_STUDIEN.md](TRAFIC_FLOW_STUDIEN.md)
 beschrieben. Sie lassen sich mit `run_trafic_flow_studien` neu berechnen.
+
+Die Wiederholungen bei beta = 0,20 beziehungsweise p = 0,3 und die neue
+Heatmap über Zugzahl und Haltezeitzuschlag sind zusammen mit den bisherigen
+Heatmaps in der [gemeinsamen PDF](ergebnisse/trafic_flow/vergleich_20261102_b7d516/Verkehrsstrom_Gesamtvergleich.pdf)
+dokumentiert. Parameter, Prüfungen und Wiederholung stehen in
+[TRAFIC_FLOW_VERGLEICH.md](TRAFIC_FLOW_VERGLEICH.md).
+`run_trafic_flow_vergleich` berechnet die Reihen; der gemeinsame PDF-Bericht
+wird anschließend mit `tools/bericht_trafic_flow_vergleich.py` erstellt.
 
 ## Start
 

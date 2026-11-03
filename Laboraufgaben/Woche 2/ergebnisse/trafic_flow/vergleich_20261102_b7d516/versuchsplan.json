@@ -1,0 +1,106 @@
+{
+  "cases": [
+    {
+      "id": "p_bisher",
+      "title": "Zugzahl und p: bisherige Messung",
+      "axis": "p",
+      "folder": "C:\\Users\\buethner\\Documents\\Uni_Master_lokal\\ModSim\\Modellbildung-und-Simulation\\Laboraufgaben\\Woche 2\\ergebnisse\\trafic_flow\\heatmaps_20261102_aaeb14\\zugzahl_p",
+      "anticipation": false,
+      "fixedP": null,
+      "fixedBeta": 0.25,
+      "origin": "vorhandene Messung"
+    },
+    {
+      "id": "p_beta020",
+      "title": "Zugzahl und p: beta = 0,20 1/s",
+      "axis": "p",
+      "folder": "C:\\Users\\buethner\\Documents\\Uni_Master_lokal\\ModSim\\Modellbildung-und-Simulation\\Laboraufgaben\\Woche 2\\ergebnisse\\trafic_flow\\vergleich_20261102_b7d516\\p_beta020",
+      "anticipation": true,
+      "fixedP": null,
+      "fixedBeta": 0.2,
+      "origin": "neue Messung"
+    },
+    {
+      "id": "beta_bisher",
+      "title": "Zugzahl und beta: bisherige Messung, p = 0",
+      "axis": "beta",
+      "folder": "C:\\Users\\buethner\\Documents\\Uni_Master_lokal\\ModSim\\Modellbildung-und-Simulation\\Laboraufgaben\\Woche 2\\ergebnisse\\trafic_flow\\heatmaps_20261102_aaeb14\\zugzahl_beta",
+      "anticipation": true,
+      "fixedP": 0,
+      "fixedBeta": null,
+      "origin": "vorhandene Messung"
+    },
+    {
+      "id": "beta_p030",
+      "title": "Zugzahl und beta: p = 0,3",
+      "axis": "beta",
+      "folder": "C:\\Users\\buethner\\Documents\\Uni_Master_lokal\\ModSim\\Modellbildung-und-Simulation\\Laboraufgaben\\Woche 2\\ergebnisse\\trafic_flow\\vergleich_20261102_b7d516\\beta_p030",
+      "anticipation": true,
+      "fixedP": 0.30000000000000004,
+      "fixedBeta": null,
+      "origin": "neue Messung"
+    },
+    {
+      "id": "halte_p030_beta020",
+      "title": "Zugzahl und Haltezeitzuschlag: p = 0,3, beta = 0,20",
+      "axis": "dwell",
+      "folder": "C:\\Users\\buethner\\Documents\\Uni_Master_lokal\\ModSim\\Modellbildung-und-Simulation\\Laboraufgaben\\Woche 2\\ergebnisse\\trafic_flow\\vergleich_20261102_b7d516\\halte_p030_beta020",
+      "anticipation": true,
+      "fixedP": 0.30000000000000004,
+      "fixedBeta": 0.2,
+      "origin": "neue Messung"
+    }
+  ],
+  "warmupMinutes": 60,
+  "measurementMinutes": 180,
+  "randomSeed": 42,
+  "randomHoldMaxSeconds": 120,
+  "trainValues": [
+    12,
+    16,
+    20,
+    24,
+    28,
+    32,
+    36,
+    40
+  ],
+  "probabilityValues": [
+    0,
+    0.1,
+    0.2,
+    0.30000000000000004,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1
+  ],
+  "betaValues": [
+    0.05,
+    0.1,
+    0.15000000000000002,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.45,
+    0.5
+  ],
+  "dwellValuesSeconds": [
+    0,
+    6,
+    12,
+    18,
+    24,
+    30
+  ],
+  "requestedSpeedKmh": 80,
+  "effectiveSpeedKmh": 79.2,
+  "runsPerConfiguration": 1,
+  "createdBerlin": "02-Nov-2026 18:46:21",
+  "matlabVersion": "26.1.0.3276743 (R2026a) Update 3"
+}

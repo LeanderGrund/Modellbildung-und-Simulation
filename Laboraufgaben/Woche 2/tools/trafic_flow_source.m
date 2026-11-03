@@ -14,7 +14,7 @@ verkehrsstromuntersuchung = false;
 anzahlZuege = 12;
 einschwingzeitMinuten = 60;
 messdauerMinuten = 120;
-wahrscheinlichkeitP = 0.05;
+wahrscheinlichkeitP = 0.15;
 zeitspanneSekunden = 120;
 %% Langsames Abbremsen
 % Die Checkbox aktiviert die zusätzliche Anpassung an einen langsameren
@@ -35,17 +35,49 @@ zusaetzlicheWartezeit = false;
 wartezeitzuschlagSekunden = 10;
 %% Untersuchungsbereiche
 % Diese Eingaben gelten nur bei aktivierter Verkehrsstromuntersuchung.
+% Die Auswahl bestimmt die x-Achse: Maximalgeschwindigkeit, Störungswahrscheinlichkeit
+% p, Antizipationsfaktor beta oder Haltezeitzuschlag. Die y-Achse zeigt immer die Zugzahl.
+% Bei p, beta und Haltezeitzuschlag bleibt die Vorgabe fest 80 km/h, effektiv 79,2 km/h.
+% Für die beta-Untersuchung ist langsames Abbremsen automatisch aktiv, auch wenn
+% die Checkbox oben ausgeschaltet ist. Bei den anderen Untersuchungen gilt die Checkbox.
+% In der p-Untersuchung ersetzt der p-Bereich den einzelnen p-Eingabewert oben.
+% In der beta-Untersuchung ersetzt der beta-Bereich den einzelnen beta-Wert oben;
+% p bleibt dort auf dem oben eingegebenen Wert konstant.
 % Je Achse: Minimum, Maximum, Schrittweite. Die obere Grenze wird eingeschlossen;
 % gegebenenfalls ist der letzte Schritt kürzer. Geschwindigkeitseingaben werden
 % auf ganze m/s abgerundet. Gleiche Rasterstufen werden nur einmal simuliert.
-% Die Heatmap zeigt die tatsächlich verwendeten Grenzen in km/h.
+% Die Bereiche der nicht gewählten x-Achsen haben keine Wirkung auf die Simulation.
 
+untersuchungsachse = "Maximalgeschwindigkeit";
 geschwindigkeitMinimumKmh = 36;
 geschwindigkeitMaximumKmh = 80;
 geschwindigkeitSchrittKmh = 7.2;
 zugzahlMinimum = 8;
 zugzahlMaximum = 24;
 zugzahlSchritt = 4;
+%% Bereich für Störungswahrscheinlichkeit p
+% Nur für die x-Achse „Störungswahrscheinlichkeit p“: derselbe p-Wert gilt
+% für Zufallsbremsung je Blockeinfahrt und zufälligen Stationszusatz je Ankunft.
+
+pMinimum = 0;
+pMaximum = 1;
+pSchritt = 0.1;
+%% Bereich für Antizipationsfaktor beta
+% Nur für die x-Achse „Antizipationsfaktor beta“. Alle beta-Werte sind positiv.
+% Die übrigen Eingaben, insbesondere p und die zusätzliche Wartezeit, gelten weiter.
+
+betaMinimum = 0.05;
+betaMaximum = 0.5;
+betaSchritt = 0.05;
+%% Bereich für Haltezeitzuschlag
+% Nur für die x-Achse „Haltezeitzuschlag“: Der Bereich setzt einen festen
+% Zuschlag je Station auf den GTFS-Halt, unabhängig von der Checkbox oben.
+% p und beta bleiben auf ihren einzelnen Eingabewerten konstant; die Checkbox
+% „Langsames Abbremsen“ gilt weiterhin. Für beta = 0,20 diese Checkbox aktivieren.
+
+haltezuschlagMinimumSekunden = 0;
+haltezuschlagMaximumSekunden = 30;
+haltezuschlagSchrittSekunden = 6;
 %% Störungsregeln und Modellannahmen
 % Zufallsbremsung: Bei jeder tatsächlichen Blockeinfahrt wird einmal mit p
 % entschieden. Bei einem Treffer ist das Bremsziel floor(v_Eintritt/2).
@@ -78,6 +110,7 @@ end
 addpath(projektordner);
 einstellungen = trafic_flow_defaults;
 einstellungen.study = verkehrsstromuntersuchung;
+einstellungen.studyAxis = untersuchungsachse;
 einstellungen.trainCount = anzahlZuege;
 einstellungen.warmupMinutes = einschwingzeitMinuten;
 einstellungen.measurementMinutes = messdauerMinuten;
@@ -93,6 +126,15 @@ einstellungen.speedStepKmh = geschwindigkeitSchrittKmh;
 einstellungen.trainMinimum = zugzahlMinimum;
 einstellungen.trainMaximum = zugzahlMaximum;
 einstellungen.trainStep = zugzahlSchritt;
+einstellungen.probabilityMinimum = pMinimum;
+einstellungen.probabilityMaximum = pMaximum;
+einstellungen.probabilityStep = pSchritt;
+einstellungen.betaMinimum = betaMinimum;
+einstellungen.betaMaximum = betaMaximum;
+einstellungen.betaStep = betaSchritt;
+einstellungen.dwellMinimumSeconds = haltezuschlagMinimumSekunden;
+einstellungen.dwellMaximumSeconds = haltezuschlagMaximumSekunden;
+einstellungen.dwellStepSeconds = haltezuschlagSchrittSekunden;
 ergebnis = run_trafic_flow(einstellungen);
 if ~verkehrsstromuntersuchung
     disp("Grafiken und Daten gespeichert unter: " + ergebnis.outputFolder)

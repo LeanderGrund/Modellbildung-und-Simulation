@@ -1,0 +1,7 @@
+requested_kmh,effective_kmh,train_count,throughput_trains_per_h,departure_count,passed,failure,file,x_value,probability,beta,anticipation,extra_dwell_s,reused
+80,79.2,1,20,1,1,,n_001_h_000.mat,0,0.3,0.2,1,0,0
+80,79.2,1,20,1,1,,n_001_h_006.mat,6,0.3,0.2,1,6,0
+80,79.2,1,20,1,1,,n_001_h_012.mat,12,0.3,0.2,1,12,0
+80,79.2,2,20,1,1,,n_002_h_000.mat,0,0.3,0.2,1,0,0
+80,79.2,2,20,1,1,,n_002_h_006.mat,6,0.3,0.2,1,6,0
+80,79.2,2,20,1,1,,n_002_h_012.mat,12,0.3,0.2,1,12,0
