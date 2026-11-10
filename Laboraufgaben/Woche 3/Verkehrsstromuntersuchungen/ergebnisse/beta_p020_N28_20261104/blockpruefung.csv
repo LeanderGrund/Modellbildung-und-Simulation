@@ -1,0 +1,11 @@
+name,passed
+Zugende 1 Bloecke voraus,1
+Zugende 2 Bloecke voraus,1
+Zugende 3 Bloecke voraus,1
+Zugende letzte Zelle Block 2; Ringschluss=false,1
+Zugende erste Zelle Block 3; Ringschluss=false,1
+Zugende letzte Zelle Block 2; Ringschluss=true,1
+Zugende erste Zelle Block 3; Ringschluss=true,1
+beta=0 erlaubt regulaere Beschleunigung,1
+Kleine beta-Werte integrieren Bruchteile,1
+Bruchteil ausserhalb des Bereichs wird verworfen,1

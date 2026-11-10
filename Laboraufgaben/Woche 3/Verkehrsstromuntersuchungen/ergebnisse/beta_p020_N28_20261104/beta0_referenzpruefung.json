@@ -1,0 +1,18 @@
+{
+  "verified": true,
+  "referenceFile": "C:\\Users\\buethner\\Documents\\Uni_Master_lokal\\ModSim\\Modellbildung-und-Simulation\\Laboraufgaben\\Woche 2\\ergebnisse\\trafic_flow\\heatmaps_20261102_aaeb14\\zugzahl_p\\laeufe\\n_028_p_003.mat",
+  "currentFile": "laeufe/beta_01.mat",
+  "probability": 0.2,
+  "trainCount": 28,
+  "beta": 0,
+  "comparedFields": [
+    "position",
+    "velocity",
+    "waitSteps",
+    "blocked",
+    "randomBrakeTarget",
+    "randomBrakeApplied",
+    "blockEntryLog"
+  ],
+  "result": "Exakte Uebereinstimmung; aus den vollstaendigen Rohdaten geprueft."
+}

@@ -1,0 +1,49 @@
+{
+  "probability": 0.2,
+  "trainCounts": [
+    20,
+    28,
+    36,
+    44
+  ],
+  "betaValues": [
+    0,
+    0.05,
+    0.1,
+    0.15000000000000002,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4,
+    0.45,
+    0.5
+  ],
+  "dwellValuesSeconds": [
+    0,
+    6,
+    12,
+    18,
+    24,
+    30,
+    36,
+    42,
+    45
+  ],
+  "fixedDwellBeta": 0.2,
+  "representativeTrainCount": 28,
+  "representativeBeta": 0.2,
+  "representativeDwellSeconds": 18,
+  "warmupMinutes": 60,
+  "measurementMinutes": 180,
+  "randomSeed": 42,
+  "randomHoldMaxSeconds": 120,
+  "requestedSpeedKmh": 80,
+  "effectiveSpeedKmh": 79.2,
+  "anticipationMaxBlocks": 2,
+  "leaderReference": "Zugende",
+  "initializationMode": "Ruhende Blockaufstellung",
+  "runsPerConfiguration": 1,
+  "initializationReason": "Für N=44 ist keine sichere gemeinsame freie Zeitphase vorhanden.",
+  "createdBerlin": "10-Nov-2026 12:57:33"
+}

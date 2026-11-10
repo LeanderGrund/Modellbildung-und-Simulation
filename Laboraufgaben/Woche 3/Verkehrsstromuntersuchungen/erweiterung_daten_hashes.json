@@ -1,0 +1,15 @@
+{
+  "daten/ringbahn_2026-10-14/HERKUNFT_ORIGINAL.md": "a14ec78b93bf026853cdb7c30a7cfc94d1fe03ee3203c63fbbe0010018ea3c64",
+  "daten/ringbahn_2026-10-14/README.md": "4b2783adabdc60ff454243fccba887f0a90d4fb1bb74ac885a439e79df21b1e3",
+  "daten/ringbahn_2026-10-14/s41_signalkandidaten.csv": "3d4203098ae80e615b5b6cea12e291dce2c5e72b7eaa7225abe4063578b0e13f",
+  "daten/ringbahn_2026-10-14/s41_stations.csv": "c74439c7a919b38090c4339e921f72833f8f8fbbffcfe30fc0d884110fac6519",
+  "daten/ringbahn_2026-10-14/s41_track_points.csv": "e616c1f01419b03570d6d50dc4c73c5a2e8e7fa2f8027255f5c0b48d0d68ecb5",
+  "daten/ringbahn_2026-10-14/sources.json": "ed79211acb7409292236192ac4cf4b433f3923e4bc84867da49c25f1ced73e62",
+  "daten/ringbahn_2026-10-14/processed/gtfs_calendar.csv": "098d3ee8396ec4fbc1faaf427fc42c06a69b729e69a479410a7540f814091299",
+  "daten/ringbahn_2026-10-14/processed/gtfs_calendar_dates.csv": "f877c60817df28aaaa45dee2d65671dc1ab531b80075817f222b694b73aa373e",
+  "daten/ringbahn_2026-10-14/processed/gtfs_routes.csv": "dba9e5583999bb7e084541748e7178763c2c23f4ea59ade9b55df62f3bf1d337",
+  "daten/ringbahn_2026-10-14/processed/gtfs_stops.csv": "c76ef9b394807684e1a738960a012b4633d40dfeb8a2ee16a2b1aeff3d141d69",
+  "daten/ringbahn_2026-10-14/processed/gtfs_stop_times.csv": "5c70e5cea55c90c96f7abac1597badbc27c446e1d6cbf24c6ad8044b3b4ec04f",
+  "daten/ringbahn_2026-10-14/processed/gtfs_trips.csv": "f34976ae0e2bba17312b206f447ae041159aff361b53a335b3df174e1db7396b",
+  "daten/ringbahn_2026-10-14/processed/s41_example_timetable.csv": "59af198346e2e39a7c932bb6b24e1272e788fc160f7c9cfd87b3c940a51973a6"
+}

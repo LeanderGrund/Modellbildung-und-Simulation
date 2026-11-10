@@ -1,0 +1,12 @@
+beta,file,departure_count,throughput_trains_per_h,verified,eligible_train_s_measurement,anticipation_decrements_measurement
+0.0,beta_01.mat,70,23.333333333333332,True,0,0
+0.05,beta_02.mat,69,23.0,True,53942,11889
+0.1,beta_03.mat,70,23.333333333333332,True,57352,17585
+0.15,beta_04.mat,67,22.333333333333332,True,55605,20428
+0.2,beta_05.mat,65,21.666666666666668,True,57218,24352
+0.25,beta_06.mat,62,20.666666666666668,True,63859,28477
+0.3,beta_07.mat,62,20.666666666666668,True,64459,29573
+0.35,beta_08.mat,63,21.0,True,63058,33739
+0.4,beta_09.mat,62,20.666666666666668,True,61598,32813
+0.45,beta_10.mat,60,20.0,True,65496,34450
+0.5,beta_11.mat,60,20.0,True,61199,40409

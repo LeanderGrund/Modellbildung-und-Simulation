@@ -1,0 +1,4 @@
+series,x_value,train_count,beta,extra_dwell_s,throughput_trains_per_h,departure_count,passed,failure,reused,shared_point,file
+beta,0,20,0,0,17.6666666666667,53,1,,0,0,n_020_beta_001.mat
+beta,0.1,20,0.1,0,18,54,1,,0,0,n_020_beta_003.mat
+beta,0.15,20,0.15,0,18.6666666666667,56,1,,0,0,n_020_beta_004.mat

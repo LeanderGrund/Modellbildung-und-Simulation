@@ -1,0 +1,9 @@
+{
+  "complete": true,
+  "configurations": 11,
+  "allRunsPassed": true,
+  "blockBoundaryTestsPassed": true,
+  "blockBoundaryTestCount": 10,
+  "representativeBeta": 0.2,
+  "holdStudyIncluded": false
+}

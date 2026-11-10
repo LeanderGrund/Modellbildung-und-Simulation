@@ -1,0 +1,14 @@
+{
+  "complete": true,
+  "auditedRuns": 11,
+  "perStepHorizonVerified": true,
+  "leaderReference": "Zugende",
+  "maxBlocks": 2,
+  "zeroBetaVerified": true,
+  "blockBoundaryTests": 10,
+  "representativeBeta": 0.2,
+  "holdStudyIncluded": false,
+  "pdfPages": 4,
+  "pdf": "Woche3_Beta_zwei_Bloecke.pdf",
+  "pdfSha256": "a0dc75fe1a68d43f47c9547974e67bd5263a56219ef417f034aff80f7e5e7b57"
+}
