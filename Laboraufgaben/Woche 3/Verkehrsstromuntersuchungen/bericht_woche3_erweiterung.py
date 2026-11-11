@@ -32,7 +32,9 @@ def verify_case(folder, row):
     beta, extra = float(row["beta"]), float(row["extra_dwell_s"])
     assert raw["report"]["checksPassed"] and row["passed"] in {"1", "true"}
     assert n in TRAINS and c["trainCount"] == p["trainCount"] == n
-    assert c["initializationMode"] == "Ruhende Blockaufstellung" and not c["initialPhaseSearch"]
+    # MATLAB speichert String-Objekte als opaque; den Modus prüft parameter.json.
+    # Die tatsächliche Aufstellung wird unten unabhängig aus allen Positionen geprüft.
+    assert not c["initialPhaseSearch"]
     assert c["randomBrakeEnabled"] and c["randomStopEnabled"] and c["anticipationEnabled"]
     assert c["randomBrakeProbability"] == .2 and c["randomStopProbability"] == .2
     assert c["randomStopMinSeconds"] == 0 and c["randomStopMaxSeconds"] == 120
@@ -126,7 +128,7 @@ def parameter_page(pdf, figures):
         ["Bedeutung des Zuschlags", "Feste zusätzliche Sekunden auf jeden GTFS-Stationshalt"],
         ["Strecke / Blocksteuerung", "Reale S41 / 117 unterschiedlich lange OSM-Signalabschnitte"],
         ["Antizipationsbereich", "Zugende des Vorgängers im 1. oder 2. Block voraus"],
-        ["Antizipationsregel", "a = max(−1, β · (v_Vorgänger − v_Zug)); β in 1/s"],
+        ["Antizipationsregel", "a = max(−1, β · Δv), nur bei Δv = v_Vorgänger − v_Zug < 0"],
         ["β = 0", "Keine Zusatzbremsung und keine Beschleunigungssperre"],
         ["Raster / Zuglänge", "1 m / 1 s; 148 m"],
         ["Beschleunigung / Verzögerung", "Bis +1 / −1 m/s²; reguläre Sicherheitsregeln bleiben aktiv"],
