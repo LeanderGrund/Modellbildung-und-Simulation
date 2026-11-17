@@ -6,7 +6,8 @@ solid = G(:,:,end);
 for t = 1:dt
     % random bits
     if mod(t-1,32)==0
-        z = randi(intmax('uint32'),size(a),'uint32');
+        % Include zero: every bit is an unbiased Bernoulli(1/2) variable.
+        z = randi([0 double(intmax('uint32'))],size(a),'uint32');
     end
     xi = bitget(z,mod(t-1,32)+1);
     % collision

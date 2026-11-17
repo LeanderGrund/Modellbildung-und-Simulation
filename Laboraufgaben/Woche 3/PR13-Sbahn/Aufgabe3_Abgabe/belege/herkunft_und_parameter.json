@@ -1,0 +1,84 @@
+{
+  "source_date": "2026-11-10",
+  "source_folder": "Verkehrsstromuntersuchungen/ergebnisse/erweiterung_20261110",
+  "source_table": "beta.csv",
+  "source_sha256": "cc978fcde653072bc69d4f8d3dfc5dc9f1c496ecd147748e24124c8d9204c3e3",
+  "new_simulations_for_this_reduced_submission": 0,
+  "trains": [
+    20,
+    28,
+    36,
+    44
+  ],
+  "beta_1_per_s": [
+    0,
+    0.2
+  ],
+  "probability_each_disturbance": 0.2,
+  "random_dwell_uniform_integer_seconds": [
+    0,
+    120
+  ],
+  "fixed_dwell_addition_seconds": 0,
+  "requested_speed_kmh": 80,
+  "effective_speed_kmh": 79.2,
+  "initialization": "Ruhende Blockaufstellung",
+  "leader_reference": "Zugende",
+  "anticipation_max_blocks": 2,
+  "warmup_minutes": 60,
+  "measurement_minutes": 180,
+  "total_minutes": 240,
+  "seed": 42,
+  "runs_per_point": 1,
+  "uncertainty": "Keine Wiederholungen oder Konfidenzintervalle; gleicher globaler Startwert paart Ereignisse nicht zuverlässig.",
+  "verified_existing_raw_files": [
+    {
+      "file": "n_020_beta_001.mat",
+      "sha256": "d9da1369694c1968c02ed9b69f805ee06ebc856144cf3c5f4c6dc0e1d8ce45a8",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 53
+    },
+    {
+      "file": "n_020_beta_005.mat",
+      "sha256": "350d4eca3976c2d2fb335f3e397df48443bde13cbb25766fb27169ed17c13015",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 55
+    },
+    {
+      "file": "n_028_beta_001.mat",
+      "sha256": "537604092d6eb12a041228f34262b788dbf5d7da33226c3a07f9f189c01a738a",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 71
+    },
+    {
+      "file": "n_028_beta_005.mat",
+      "sha256": "8f06661fb11afc808220d2c84edf3b300f060ec4f9ddc8596b0fefee7a3a4dfa",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 66
+    },
+    {
+      "file": "n_036_beta_001.mat",
+      "sha256": "9d27ae4c84ba80d22e8a37087e366d22382a7d7e575a0078afd484fd68cc1459",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 75
+    },
+    {
+      "file": "n_036_beta_005.mat",
+      "sha256": "2d2b4056061302a17bff07f88e072a13bafd40e93e819cd4e9a12f034365a010",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 66
+    },
+    {
+      "file": "n_044_beta_001.mat",
+      "sha256": "f03ccf8a0d7ec0f71777122efa322bf81f3b5815554c9a8200a8c87a2b9c39e4",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 79
+    },
+    {
+      "file": "n_044_beta_005.mat",
+      "sha256": "bf65c2f049dd87df5aaa837744479b18ba89b57ef4a00a2c9cb0ce4ea44bc8d0",
+      "old_audit_passed": true,
+      "departure_count_rechecked": 66
+    }
+  ]
+}

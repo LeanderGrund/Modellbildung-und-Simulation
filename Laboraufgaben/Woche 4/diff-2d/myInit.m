@@ -1,9 +1,9 @@
 function [G,p] = myInit(siz,p)
 
 arguments
-    
+
     % Simulationsgebiet 2D
-    siz (1,2) double {mustBePositive,mustBeInteger} = [200 400] 
+    siz (1,2) double {mustBePositive,mustBeInteger} = [200 400]
 
     p.scenario string = 'rechteck';
 
@@ -30,11 +30,11 @@ G = false([n1 n2 n3]);
 switch p.scenario
 
     case 'one' % Ein Teilchen
-        G(end/2,end/2,randi(4,1)) = true;
+        G(ceil(n1/2),ceil(n2/2),randi(4,1)) = true;
 
     case 'cg' % Eine cg Box
         G = reshape(G,[cg n1/cg cg n2/cg n3]);
-        G(:,round(end/2),:,round(end/2),:) = rand(1,cg,1,cg,n3) < N;
+        G(:,round(end/2),:,round(end/2),:) = rand(cg,1,cg,1,n3) < N;
         G = reshape(G,[n1 n2 n3]);
 
     case 'kreis' % Kleiner Kreis
@@ -50,8 +50,8 @@ switch p.scenario
     case 'rechteck' % Rechteck
 
         G = reshape(G,[cg n1/cg cg n2/cg n3]);
-        i1 = round(0.4*n1/cg):round(0.6*n1/cg);
-        i2 = round(0.4*n2/cg):round(0.6*n2/cg);
+        i1 = max(1,round(0.4*n1/cg)):max(1,round(0.6*n1/cg));
+        i2 = max(1,round(0.4*n2/cg)):max(1,round(0.6*n2/cg));
         G(:,i1,:,i2,:) = rand(cg,numel(i1),cg,numel(i2),n3) < N;
         G = reshape(G,[n1,n2,n3]);
 

@@ -1,0 +1,17 @@
+{
+  "archive": "C:\\Users\\buethner\\Documents\\Uni_Master_lokal\\ModSim\\Modellbildung-und-Simulation\\Laboraufgaben\\Woche 3\\PR13-Sbahn\\Aufgabe3_Abgabe.zip",
+  "files": 43,
+  "archive_bytes": 835956,
+  "sha256": "01df10e2e5085993d7559fc00dafddf5b4e12e49fdc426a9fcf9d831d1693109",
+  "letter_pages": 2,
+  "existing_results_date": "2026-11-10",
+  "existing_results_used": 8,
+  "model_runtime_files": 21,
+  "manual_starter": "SIMULATION_STARTEN.m",
+  "automatic_sweep_scripts_included": false,
+  "new_simulations_in_reduced_submission": 0,
+  "model_core_unchanged": true,
+  "teacher_templates_preserved": 57,
+  "zip_crc_bytes_and_extraction_verified": true,
+  "starter_static_analysis": "NUR_STATISCHE_PRUEFUNG_KEINE_SIMULATION"
+}

@@ -1,0 +1,35 @@
+{
+  "accessed_on": "2026-11-11",
+  "sources": [
+    {
+      "id": "Q1",
+      "title": "Gründe für Störungen",
+      "publisher": "S-Bahn Berlin GmbH",
+      "url": "https://sbahn.berlin/fahren/bauen-stoerung/gruende-fuer-stoerungen/",
+      "relevance": "Qualitativer Bezug: Verzögerungen durch Fahrgastwechsel und Nachwirkungen von Betriebsstörungen; keine Kalibrierung von p oder Störungsdauer."
+    },
+    {
+      "id": "Q2",
+      "title": "Schriftliche Anfrage 18/17266: Kapazität der S-Bahn-Gleise auf der Stadtbahn",
+      "publisher": "Abgeordnetenhaus Berlin / Senatsantwort mit Stellungnahme der DB AG",
+      "date": "2018-12-20",
+      "url": "https://pardok.parlament-berlin.de/starweb/adis/citat/VT/18/SchrAnfr/s18-17266.pdf",
+      "relevance": "Allgemeine Wechselwirkung von Haltezeiten, Fahr-/Bremsverhalten, Zugfolge und Betriebsqualität. Angaben betreffen die Stadtbahn 2018 und werden nicht als heutige Ringbahn-Kapazitätswerte übernommen."
+    },
+    {
+      "id": "Q3",
+      "title": "Senatsverwaltung für Mobilität, Verkehr, Klimaschutz und Umwelt",
+      "publisher": "Land Berlin",
+      "url": "https://www.berlin.de/sen/uvk/",
+      "relevance": "Bezeichnung der hypothetischen Empfängerinstitution."
+    },
+    {
+      "id": "A",
+      "title": "SBahn3.pdf – PR 1.3, Version 25. Oktober 2026",
+      "publisher": "HTW Berlin, Dr. Stephan Kusche",
+      "relevance": "Aufgabe 3: hypothetischer Brandbrief, maximal zwei Seiten, Inhalte a–d.",
+      "note": "Originalaufgabenblatt im ursprünglichen PR13-Sbahn-Ordner; für die Simulation nicht erforderlich."
+    }
+  ],
+  "data_provenance": "daten/ringbahn_2026-10-14/sources.json"
+}

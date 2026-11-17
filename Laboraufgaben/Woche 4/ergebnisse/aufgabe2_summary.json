@@ -1,0 +1,172 @@
+{
+  "field": {
+    "size": [
+      200,
+      200
+    ],
+    "times": [
+      0,
+      100,
+      1000,
+      5000
+    ],
+    "particleCounts": [
+      4997,
+      4997,
+      4997,
+      4997
+    ],
+    "meanFinalDensity": 0.03123125,
+    "stdFinalDensity": 0.018973491557755802
+  },
+  "runtime": {
+    "matlab": "26.1.0.3276743 (R2026a) Update 3",
+    "computer": "PCWIN64",
+    "repetitions": 5,
+    "cellExponent": 0.74367074415747059,
+    "stepExponent": 0.98047765541784138,
+    "sizeMeasurements": [
+      {
+        "cells": 2500,
+        "steps": 100,
+        "median_s": 0.015137,
+        "min_s": 0.0149439,
+        "max_s": 0.0165494
+      },
+      {
+        "cells": 10000,
+        "steps": 100,
+        "median_s": 0.0308009,
+        "min_s": 0.0302472,
+        "max_s": 0.0350484
+      },
+      {
+        "cells": 40000,
+        "steps": 100,
+        "median_s": 0.1074123,
+        "min_s": 0.1030431,
+        "max_s": 0.1292861
+      },
+      {
+        "cells": 160000,
+        "steps": 100,
+        "median_s": 0.3102113,
+        "min_s": 0.3070513,
+        "max_s": 0.3302165
+      }
+    ],
+    "stepMeasurements": [
+      {
+        "cells": 40000,
+        "steps": 10,
+        "median_s": 0.0107902,
+        "min_s": 0.0084801,
+        "max_s": 0.0108953
+      },
+      {
+        "cells": 40000,
+        "steps": 30,
+        "median_s": 0.0257833,
+        "min_s": 0.0229744,
+        "max_s": 0.0277493
+      },
+      {
+        "cells": 40000,
+        "steps": 100,
+        "median_s": 0.1144974,
+        "min_s": 0.0885494,
+        "max_s": 0.1299418
+      },
+      {
+        "cells": 40000,
+        "steps": 300,
+        "median_s": 0.2848176,
+        "min_s": 0.2639551,
+        "max_s": 0.3055464
+      },
+      {
+        "cells": 40000,
+        "steps": 1000,
+        "median_s": 0.9139071,
+        "min_s": 0.8803078,
+        "max_s": 1.1046906
+      }
+    ]
+  },
+  "walk": {
+    "ensemble": 20000,
+    "steps": 1000,
+    "sampleEvery": 10,
+    "seed": 2400,
+    "summary": [
+      {
+        "model": "(i) Block-CA",
+        "theory_MSD_per_step": 1,
+        "D": 0.25,
+        "measured_MSD_n1000": 1003.3138,
+        "theory_MSD_n1000": 1000,
+        "relative_error": 0.0033137999999999224
+      },
+      {
+        "model": "(ii) Diskretes Quadrat",
+        "theory_MSD_per_step": 1.3333333333333333,
+        "D": 0.33333333333333331,
+        "measured_MSD_n1000": 1332.99835,
+        "theory_MSD_n1000": 1333.3333333333333,
+        "relative_error": -0.00025123749999989009
+      },
+      {
+        "model": "(iii) Kontinuierliches Quadrat",
+        "theory_MSD_per_step": 0.66666666666666663,
+        "D": 0.16666666666666666,
+        "measured_MSD_n1000": 673.60241644597124,
+        "theory_MSD_n1000": 666.66666666666663,
+        "relative_error": 0.010403624668956946
+      },
+      {
+        "model": "(iv) Gleichverteilte Kreisscheibe",
+        "theory_MSD_per_step": 0.5,
+        "D": 0.125,
+        "measured_MSD_n1000": 506.996493791046,
+        "theory_MSD_n1000": 500,
+        "relative_error": 0.013992987582092109
+      }
+    ],
+    "meanPosition": [
+      [
+        -0.0489,
+        -0.0756
+      ],
+      [
+        -0.28615,
+        0.1097
+      ],
+      [
+        -0.076505076573706782,
+        -0.095798086382357178
+      ],
+      [
+        -0.13814570071012647,
+        -0.1360848394566318
+      ]
+    ],
+    "variance": [
+      [
+        504.51380878999987,
+        498.79188463999992
+      ],
+      [
+        669.38676817750149,
+        663.517665909999
+      ],
+      [
+        338.66711603414581,
+        334.92027011172922
+      ],
+      [
+        252.17198395438237,
+        254.78690651850957
+      ]
+    ]
+  }
+}

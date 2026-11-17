@@ -1,0 +1,9 @@
+﻿zugzahl,beta_1_pro_s,fester_haltezuschlag_s,abfahrten_station1,messdauer_h,durchsatz_zuege_pro_h,startwert,bestandsdatei
+20,0,0,53,3,17.666666666666668,42,n_020_beta_001.mat
+20,0.2,0,55,3,18.333333333333332,42,n_020_beta_005.mat
+28,0,0,71,3,23.666666666666668,42,n_028_beta_001.mat
+28,0.2,0,66,3,22.0,42,n_028_beta_005.mat
+36,0,0,75,3,25.0,42,n_036_beta_001.mat
+36,0.2,0,66,3,22.0,42,n_036_beta_005.mat
+44,0,0,79,3,26.333333333333332,42,n_044_beta_001.mat
+44,0.2,0,66,3,22.0,42,n_044_beta_005.mat
