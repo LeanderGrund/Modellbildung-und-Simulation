@@ -29,6 +29,12 @@ cg = p.cg; N = p.N;
 G = false([n1 n2 n3]);
 switch p.scenario
 
+    case 'leer' % Keine Teilchen
+        % G ist bereits in allen vier Kanaelen false.
+
+    case 'voll' % Alle vier Richtungskanaele an jedem Ort besetzt
+        G(:) = true;
+
     case 'one' % Ein Teilchen
         G(ceil(n1/2),ceil(n2/2),randi(4,1)) = true;
 
@@ -47,13 +53,26 @@ switch p.scenario
             G(ind + (i1-1)*n1*n2) = rand(1,numel(ind)) < N;
         end
 
-    case 'rechteck' % Rechteck
+    case {'rechteck','rechteck_rand'} % Rechteck mittig oder am linken Rand
 
         G = reshape(G,[cg n1/cg cg n2/cg n3]);
         i1 = max(1,round(0.4*n1/cg)):max(1,round(0.6*n1/cg));
         i2 = max(1,round(0.4*n2/cg)):max(1,round(0.6*n2/cg));
         G(:,i1,:,i2,:) = rand(cg,numel(i1),cg,numel(i2),n3) < N;
         G = reshape(G,[n1,n2,n3]);
+        if p.scenario == "rechteck_rand"
+            firstColumn = (i2(1)-1)*cg+1;
+            G = circshift(G,[0 1-firstColumn 0]);
+        end
+
+    case 'donut' % Mittiger Kreisring; Innenradius 0.1, Aussenradius 0.2
+        [x1,x2] = ndgrid((1:n1)-(n1+1)/2,(1:n2)-(n2+1)/2);
+        r2 = x1.^2+x2.^2;
+        scale = min(n1,n2);
+        ring = r2 >= (0.1*scale)^2 & r2 <= (0.2*scale)^2;
+        for k = 1:n3
+            G(:,:,k) = ring & (rand(n1,n2) < N);
+        end
 
     case 'cgx' % Viele cg Boxen
 

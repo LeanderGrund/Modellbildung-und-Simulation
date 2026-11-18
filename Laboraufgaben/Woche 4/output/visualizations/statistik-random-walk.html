@@ -1,0 +1,106 @@
+<div id="rw-statistik-vergleich">
+  <style>
+    #rw-statistik-vergleich { color:var(--foreground); display:grid; gap:calc(var(--font-size-base) * 0.7); }
+    #rw-statistik-vergleich h2 { max-width:calc(100% - 90px); }
+    #rw-statistik-vergleich .rw-plot { width:100%; display:block; overflow:visible; }
+    #rw-statistik-vergleich .rw-legend { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:calc(var(--font-size-base) * 0.5); }
+    #rw-statistik-vergleich .rw-item { display:flex; gap:calc(var(--font-size-base) * 0.5); align-items:center; flex-wrap:wrap; }
+    #rw-statistik-vergleich .rw-dot { width:10px; height:10px; border-radius:50%; flex:none; }
+    #rw-statistik-vergleich .rw-axis { stroke:var(--muted-foreground); stroke-width:1; }
+    #rw-statistik-vergleich .rw-grid { stroke:var(--border); stroke-width:1; }
+    #rw-statistik-vergleich .rw-label { fill:var(--muted-foreground); }
+    #rw-statistik-vergleich .rw-radius { fill:none; stroke-width:2; }
+    #rw-statistik-vergleich.rw-changing .rw-radius { transition:r 150ms linear; }
+    @media (prefers-reduced-motion:reduce) { #rw-statistik-vergleich.rw-changing .rw-radius { transition:none; } }
+    @media (max-width:430px) { #rw-statistik-vergleich .rw-legend { grid-template-columns:1fr; } }
+  </style>
+  <h2>RMS-Abstände der vier Modelle</h2>
+  <div class="viz-controls">
+    <label class="form-label" for="rw-statistik-n">Zeitschritte: <output id="rw-statistik-n-value" class="tabular-nums">1000</output>
+      <input id="rw-statistik-n" class="form-range" type="range" min="1" max="1000" step="1" value="1000">
+    </label>
+  </div>
+  <svg class="rw-plot" role="img" aria-label="Vier konzentrische Kreise mit den theoretischen RMS-Abständen vom Startpunkt; alle mittleren Positionen liegen im Ursprung."></svg>
+  <div class="text-small">Mittlere Position aller vier Modelle: (0, 0)</div>
+  <div class="rw-legend" aria-live="polite"></div>
+  <script>
+    (() => {
+      const root = document.getElementById('rw-statistik-vergleich');
+      const svg = root.querySelector('.rw-plot');
+      const slider = root.querySelector('#rw-statistik-n');
+      const value = root.querySelector('#rw-statistik-n-value');
+      const legend = root.querySelector('.rw-legend');
+      const ns = 'http://www.w3.org/2000/svg';
+      const models = [
+        {label:'(i) CA', slope:1},
+        {label:'(ii) Diskretes Quadrat', slope:4/3},
+        {label:'(iii) Stetiges Quadrat', slope:2/3},
+        {label:'(iv) Kreisscheibe', slope:1/2}
+      ];
+      let n = 1000;
+      const clamp = x => Math.max(1,Math.min(1000,Math.round(Number(x)||1000)));
+      const saved = window.openai && window.openai.widgetState;
+      if(saved && saved.modelContent) n = clamp(saved.modelContent.steps);
+      const fmt = new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+      function node(tag,attrs,text) {
+        const el = document.createElementNS(ns,tag);
+        Object.entries(attrs).forEach(([key,val]) => el.setAttribute(key,String(val)));
+        if(text !== undefined) el.textContent = text;
+        svg.appendChild(el);
+        return el;
+      }
+      const values = models.map((m,i) => {
+        const row = document.createElement('div'); row.className = 'rw-item';
+        const dot = document.createElement('span'); dot.className = 'rw-dot';
+        dot.style.background = 'var(--viz-series-'+(i+1)+')'; dot.setAttribute('aria-hidden','true');
+        const label = document.createElement('span'); label.textContent = m.label+': ';
+        const output = document.createElement('span'); output.className = 'tabular-nums';
+        row.append(dot,label,output); legend.appendChild(row);
+        return output;
+      });
+      let circles = [], scale = 1;
+      function update(animate) {
+        if(animate) root.classList.add('rw-changing');
+        slider.value = String(n); value.value = String(n);
+        models.forEach((m,i) => {
+          const rms = Math.sqrt(m.slope*n);
+          circles[i].style.r = (scale*rms)+'px';
+          circles[i].setAttribute('data-tooltip',m.label+': RMS-Abstand '+fmt.format(rms)+' Längeneinheiten');
+          values[i].textContent = fmt.format(rms)+' LE';
+        });
+      }
+      function draw() {
+        root.classList.remove('rw-changing'); svg.replaceChildren();
+        const width = Math.max(280,root.getBoundingClientRect().width);
+        const height = Math.max(260,Math.min(350,width*.6));
+        const cx = width/2, cy = height/2-8;
+        scale = Math.min((width-94)/90,(height-66)/90);
+        svg.setAttribute('width',width); svg.setAttribute('height',height);
+        [-40,-20,0,20,40].forEach(tick => {
+          if(width < 440 && Math.abs(tick) === 20) return;
+          const x = cx+scale*tick, y = cy-scale*tick;
+          node('line',{x1:x,x2:x,y1:cy-40*scale,y2:cy+40*scale,class:'rw-grid'});
+          node('line',{x1:cx-40*scale,x2:cx+40*scale,y1:y,y2:y,class:'rw-grid'});
+          node('text',{x,y:cy+40*scale+19,'text-anchor':'middle',class:'rw-label text-small'},tick);
+          if(tick !== 0) node('text',{x:cx-40*scale-9,y:y+4,'text-anchor':'end',class:'rw-label text-small'},tick);
+        });
+        node('line',{x1:cx-40*scale,x2:cx+40*scale,y1:cy,y2:cy,class:'rw-axis'});
+        node('line',{x1:cx,x2:cx,y1:cy-40*scale,y2:cy+40*scale,class:'rw-axis'});
+        circles = models.map((m,i) => node('circle',{cx,cy,class:'rw-radius',stroke:'var(--viz-series-'+(i+1)+')'}));
+        node('circle',{cx,cy,r:3,fill:'var(--foreground)'});
+        node('text',{x:width/2,y:height-2,'text-anchor':'middle',class:'rw-label text-small'},'x / Längeneinheiten (LE)');
+        update(false);
+      }
+      slider.addEventListener('input',() => {
+        n = clamp(slider.value); update(true);
+        if(window.openai && window.openai.setWidgetState)
+          window.openai.setWidgetState({modelContent:{steps:n,quantity:'RMS-Abstand'},privateContent:null}).catch(() => {});
+      });
+      window.addEventListener('openai:set_globals',event => {
+        const state = event.detail && event.detail.globals && event.detail.globals.widgetState;
+        if(state && state.modelContent) { n = clamp(state.modelContent.steps); update(false); }
+      });
+      new ResizeObserver(draw).observe(root); draw();
+    })();
+  </script>
+</div>
