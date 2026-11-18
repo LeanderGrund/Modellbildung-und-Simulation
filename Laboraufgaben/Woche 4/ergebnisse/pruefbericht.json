@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "matlab": "26.1.0.3203278 (R2026a)",
+    "computer": "MACA64",
+    "executedAt": "2026-11-18 08:24:11"
+  },
+  "tests": {
+    "passed": 15,
+    "messages": [
+      "Life: Block bleibt konstant",
+      "Life: Blinker hat Periode 2",
+      "Life: Gleiter verschiebt sich nach 4 Schritten um (1,1)",
+      "Life: Gleiter überquert den periodischen Rand",
+      "Life: Leeres Feld bleibt ohne Geburt leer",
+      "Life: Geburtswahrscheinlichkeit 1 füllt das Feld",
+      "Life: Sterbewahrscheinlichkeit 1 löscht alle Zellen",
+      "Life: spontane Geburtsrate stimmt statistisch mit 10^-3 überein",
+      "Diffusion: alle Szenarien initialisieren, Teilchenzahl und Format bleiben erhalten",
+      "Diffusion: Einteilchenstart auch auf ungeradem Gitter",
+      "Diffusion: leeres Gitter bleibt leer",
+      "Diffusion: voll besetztes Gitter bleibt voll",
+      "Diffusion: Kollision erhält lokal die Masse für alle 16 Belegungen",
+      "Diffusion: Richtungswechsel um 90 Grad und periodischer Rand",
+      "Diffusion: Einteilchenweg bleibt erhalten und wechselt jeden Schritt die Achse"
+    ],
+    "lastUnwrappedPosition": [
+      18,
+      -10
+    ]
+  }
+}

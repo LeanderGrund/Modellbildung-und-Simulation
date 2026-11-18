@@ -1,6 +1,6 @@
 # Lösung: PR 2.1 – Diffusions-Blockautomat
 
-Aufgabenblatt: `Diffusion1.pdf`, Version 9. November 2026. Die Lösung verwendet die bereitgestellten MATLAB-Vorlagen. Alle Zufallsversuche haben feste Startwerte für den Zufallszahlengenerator. Konkrete Messwerte stehen zusätzlich in `ergebnisse/`.
+Aufgabenblatt: `Diffusion1.pdf`, Version 9. November 2026. Die Lösung verwendet die bereitgestellten MATLAB-Vorlagen. Geprüfter Lauf: 2026-11-18 08:24:11 (lokale Rechnerzeit), MATLAB 26.1.0.3203278 (R2026a), Apple Silicon (MACA64). Alle Zufallsversuche haben feste Startwerte für den Zufallszahlengenerator. Konkrete Messwerte stehen zusätzlich in `ergebnisse/`.
 
 ## Programme starten
 
@@ -12,7 +12,7 @@ results = run_diffusion1;
 
 Der Aufruf prüft die Implementierung, bearbeitet beide Aufgaben und speichert PNG-Diagramme, CSV-Tabellen, JSON-Zusammenfassungen und `ergebnisse/diffusion1_ergebnisse.mat`. Die Bilderzeugung erfolgt ohne Animationsfenster. Für eine interaktive Diffusionsanimation kann im Unterordner `diff-2d` zusätzlich `demo` aufgerufen werden.
 
-Die beiden Vorlagenordner enthalten gleichnamige Funktionen. Deshalb wechselt der Hauptaufruf jeweils das Arbeitsverzeichnis und leert den Funktionscache. Beide Ordner sollten nicht gleichzeitig über `genpath` in den Suchpfad aufgenommen werden.
+Die beiden Vorlagenordner enthalten gleichnamige Funktionen. Deshalb wechselt der Hauptaufruf jeweils das Arbeitsverzeichnis und entfernt die drei gleichnamigen Hilfsfunktionen aus dem Funktionscache. Beide Ordner sollten nicht gleichzeitig über `genpath` in den Suchpfad aufgenommen werden.
 
 ## Aufgabe 1 – Game of Life
 
@@ -55,7 +55,7 @@ Startmuster, wobei `1` eine lebende Zelle bezeichnet:
 
 Nach vier Schritten hat der Gleiter wieder dieselbe Gestalt, um eine Zeile nach unten und eine Spalte nach rechts verschoben. Er besitzt fünf lebende Zellen. Seine translatorische Periode beträgt 4; seine Geschwindigkeitskomponenten sind je \(1/4\) Gitterabstand pro Schritt. Nach Erreichen des Randes tritt er wegen der periodischen Randbedingungen an der gegenüberliegenden Seite wieder ein.
 
-Auf dem verwendeten quadratischen \(100\times100\)-Torus wiederholt sich der vollständige Zustand nach 400 Schritten. Der Funktionstest prüft die exakte Verschiebung nach vier Schritten auch beim Überqueren des Randes. Die Eigenschaften und das Muster sind in [LifeWiki: Glider](https://conwaylife.com/wiki/Glider) dokumentiert.
+Auf dem verwendeten quadratischen \(100\times100\)-Torus wiederholt sich der vollständige Zustand nach 400 Schritten. Der Funktionstest prüft die exakte Verschiebung nach vier Schritten auch beim Überqueren des Randes. Die Bewegung wird hier durch den exakten Vier-Schritt-Test geprüft. Als weiterführende Quelle dient [LifeWiki: Glider](https://conwaylife.com/wiki/Glider).
 
 ![Die vier Gleiterphasen und die verschobene Ausgangsform](ergebnisse/aufgabe1_gleiter.png)
 
@@ -121,7 +121,7 @@ Im ausgeführten Versuch ergeben sich folgende Zellzahlen:
 | 1000 | 273 | 5 | 0 | 9 | 5 |
 | 2000 | 273 | 5 | 0 | 7 | 8 |
 
-Der Gleiter erleidet bei Schritt 153 das erste zusätzliche Sterben; bei Schritt 483 ist das Feld vollständig leer. Beim Zufallsstart bleiben zuletzt 273 Zellen erhalten, während sich bei Schritt 2000 noch 56 Zellzustände ändern: Es ist also kein vollständig ruhendes Endbild. Im Versuch mit ausschließlich spontanen Geburten liegen im letzten 500-Schritt-Fenster im Mittel 10,066 lebende Zellen vor, mit Werten zwischen 1 und 21. In diesem Messfenster dominieren somit kurzlebige vereinzelte Zellen; eine große dauerhafte Kolonie ist in diesem Lauf nicht entstanden.
+Der Gleiter erleidet bei Schritt 153 das erste zusätzliche Sterben. Das veränderte Muster wächst durch die normale Life-Regel vorübergehend sogar auf 56 Zellen bei Schritt 218; bei Schritt 483 ist das Feld vollständig leer. Zusätzliches Sterben bedeutet somit keine monoton fallende Zellzahl. Beim Zufallsstart bleiben zuletzt 273 Zellen erhalten, während sich bei Schritt 2000 noch 56 Zellzustände ändern: Es ist also kein vollständig ruhendes Endbild. Im Versuch mit ausschließlich spontanen Geburten liegen im letzten 500-Schritt-Fenster im Mittel 10,066 lebende Zellen vor, mit Werten zwischen 1 und 21. In diesem Messfenster dominieren somit kurzlebige vereinzelte Zellen; eine große dauerhafte Kolonie ist in diesem Lauf nicht entstanden.
 
 ## Aufgabe 2 – Diffusion mittels 2D-Block-CA
 
@@ -199,7 +199,7 @@ Folgende Tests werden automatisiert ausgeführt:
 6. Ein geeignet platzierter Einzelzustand prüft gleichzeitig den Richtungswechsel und das Wiedereintreten am gegenüberliegenden periodischen Rand.
 7. Ein Ensemble von 20.000 unabhängigen Einteilchenwegen liefert die theoretische mittlere quadratische Entfernung innerhalb einer vorab gewählten Toleranz von 4 Prozent. Das ist ein statistischer Plausibilitätstest und kein Beweis.
 
-Zusätzlich gibt es Tests der bekannten Life-Muster sowie der extremen und statistischen Geburts-/Sterbewahrscheinlichkeiten. Der Gesamttest wird mit `pruefe_diffusion1` gestartet.
+Zusätzlich gibt es Tests der bekannten Life-Muster sowie der extremen und statistischen Geburts-/Sterbewahrscheinlichkeiten. Die 15 Regeltests werden mit `pruefe_diffusion1` gestartet. Der zusätzliche MSD-Test gehört zur Ausführung von `aufgabe2` und wird im vollständigen Lauf ebenfalls geprüft.
 
 Als Beispiel wird ein Rechteck auf einem \(200\times200\)-Gitter simuliert. Dargestellt ist die mittlere Kanalbelegung in \(10\times10\)-Boxen:
 
@@ -225,7 +225,7 @@ T(M,n)=\Theta(Mn),\qquad S(M)=\Theta(M).
 
 Zählt man die vier binären Kanäle als einzelne Zellen, ist die Zellzahl \(4M\); der konstante Faktor ändert die Skalierung nicht. Bei quadratischem Feld mit Seitenlänge \(L\) folgt \(T=\Theta(L^2n)\), nicht \(\Theta(Ln)\).
 
-**Messverfahren:** Grafik und Initialisierung ausschließen, JIT-Aufwärmlauf durchführen, pro Parameterkombination fünf Wiederholungen messen und den Median verwenden. Variiert werden \(M=2500,10000,40000,160000\) bei 100 Schritten sowie \(n=10,30,100,300,1000\) bei \(M=40000\). Gemessen wird das bereitgestellte, vektorisierte `myUpdate`, nicht das vereinfachte Einteilchenmodell.
+**Messverfahren:** Grafik und Initialisierung ausschließen, JIT-Aufwärmlauf durchführen, pro Parameterkombination fünf Wiederholungen messen und den Median verwenden. Variiert werden \(M=2500,10000,40000,160000,640000\) bei 100 Schritten sowie \(n=10,30,100,300,1000\) bei \(M=40000\). Gemessen wird das bereitgestellte, vektorisierte `myUpdate`, nicht das vereinfachte Einteilchenmodell.
 
 Ein Potenzfit \(\log T=\alpha\log M+c\) beziehungsweise \(\log T=\beta\log n+c\) sollte Exponenten in der Nähe von 1 ergeben. Cache-Effekte, Speicherbandbreite, feste Aufrufkosten und Messschwankungen können Abweichungen verursachen. Die Bitgenerierung erfolgt jeweils für Blöcke von bis zu 32 Schritten, wodurch ebenfalls kleine Laufzeitstufen entstehen können.
 
@@ -233,24 +233,25 @@ Ein Potenzfit \(\log T=\alpha\log M+c\) beziehungsweise \(\log T=\beta\log n+c\)
 
 Die CSV-Dateien `aufgabe2_laufzeit_zellen.csv` und `aufgabe2_laufzeit_schritte.csv` enthalten Median, Minimum und Maximum in Sekunden. MATLAB-Version und die Fitexponenten stehen in `aufgabe2_summary.json`. Die Messungen sind rechnerabhängig.
 
-Im abschließenden Lauf unter MATLAB R2026a Update 3 wurden folgende Mediane gemessen:
+Im abschließenden Lauf auf diesem Mac unter MATLAB 26.1.0.3203278 (R2026a) (MACA64) wurden folgende Mediane gemessen:
 
 | Gitterorte \(M\) | Laufzeit für 100 Schritte / s |
 |---:|---:|
-| 2500 | 0,015137 |
-| 10000 | 0,030801 |
-| 40000 | 0,107412 |
-| 160000 | 0,310211 |
+| 2500 | 0,002245 |
+| 10000 | 0,009174 |
+| 40000 | 0,024968 |
+| 160000 | 0,046391 |
+| 640000 | 0,122324 |
 
 | Schritte \(n\) bei 40000 Gitterorten | Laufzeit / s |
 |---:|---:|
-| 10 | 0,010790 |
-| 30 | 0,025783 |
-| 100 | 0,114497 |
-| 300 | 0,284818 |
-| 1000 | 0,913907 |
+| 10 | 0,002819 |
+| 30 | 0,007083 |
+| 100 | 0,023063 |
+| 300 | 0,070950 |
+| 1000 | 0,226371 |
 
-Die Fits liefern \(\alpha=0{,}744\) bezüglich der Gitterorte und \(\beta=0{,}980\) bezüglich der Schritte. Die Schrittzahlabhängigkeit liegt damit nahe an der theoretischen Linearität. Die Größenreihe zeigt im untersuchten Bereich eine sublineare effektive Potenz; sie bestätigt den asymptotischen Exponenten 1 quantitativ noch nicht. Aus diesem begrenzten Bereich lässt sich aber auch keine grundsätzlich sublineare Komplexität ableiten: Das Programm bearbeitet nachweislich jeden Gitterort pro Schritt. Die konkrete Ursache der Abweichung, etwa feste Kosten oder größenabhängige MATLAB-Optimierungen, wurde nicht separat gemessen.
+Die Fits liefern \(\alpha=0,694\) bezüglich der Gitterorte und \(\beta=0,962\) bezüglich der Schritte. Die Schrittzahlabhängigkeit liegt damit nahe an der theoretischen Linearität. Die Größenreihe zeigt auch im erweiterten Bereich bis 640000 Gitterorte eine sublineare effektive Potenz; sie bestätigt den asymptotischen Exponenten 1 quantitativ noch nicht. Daraus lässt sich keine grundsätzlich sublineare Komplexität ableiten: Das Programm bearbeitet jeden Gitterort pro Schritt. Feste Kosten, Speicherzugriffe und größenabhängige MATLAB-Optimierungen sind mögliche Einflüsse, wurden aber nicht einzeln vermessen. Laufzeiten sind rechner- und lastabhängig. Die fünf Einzelmessungen je Einstellung sind zusätzlich im JSON-Ergebnis gespeichert.
 
 ### (d) Vier Random-Walk-Modelle in der unendlichen Ebene
 
@@ -337,7 +338,7 @@ Die tatsächlich gemessenen MSD-Werte nach 1000 Schritten sind:
 | (iii) stetiges Quadrat | 666,67 | 673,60 | +1,040 % |
 | (iv) Kreisscheibe | 500,00 | 507,00 | +1,399 % |
 
-Alle vier Modelle stimmen damit innerhalb der statistischen Schwankungen gut mit den hergeleiteten Schrittvarianzen überein. Alle 15 Regel- und Erhaltungstests wurden unter MATLAB R2026a Update 3 erfolgreich ausgeführt.
+Alle vier Modelle stimmen damit innerhalb der statistischen Schwankungen gut mit den hergeleiteten Schrittvarianzen überein. Alle 15 Regel- und Erhaltungstests wurden unter MATLAB 26.1.0.3203278 (R2026a) auf diesem Mac erfolgreich ausgeführt. Zusätzlich erfüllt jedes der vier Random-Walk-Ensembles die vorab festgelegte MSD-Toleranz von 4 Prozent. Der Prüfbericht steht in `ergebnisse/pruefbericht.json`.
 
 ![Einzelwege mit Abtastung alle zehn Schritte](ergebnisse/aufgabe2_random_walk_wege.png)
 
@@ -355,6 +356,12 @@ Für große Schrittzahlen sind die Verteilungen nach angemessener räumlicher Mi
 - `diff-2d/aufgabe2.m`: Konzentrationsverlauf, echte Laufzeitmessungen und vier Walk-Modelle.
 - `pruefe_diffusion1.m`: Tests bekannter Muster, Randbedingungen und Erhaltungssätze.
 - `run_diffusion1.m`: gemeinsamer Einstiegspunkt für die vollständige Reproduktion.
-- `ergebnisse/`: gemessene Daten, Diagramme und MATLAB-Ergebnisdatei.
+- `ergebnisse/`: gemessene Daten, Diagramme, Prüfbericht und MATLAB-Ergebnisdatei.
+- `erstelle_pdf.py`: setzt diesen Lösungstext einschließlich Formeln und Diagrammen als PDF.
+- `README.md`: Start und Reproduktion der Ergebnisse.
+
+Die PDF wird nach dem MATLAB-Lauf mit `python3 erstelle_pdf.py` aktualisiert; sie liegt unter `output/pdf/Diffusion1_Loesung.pdf`. Die benötigten Python-Pakete stehen in `requirements-pdf.txt`. Ein neuer MATLAB-Lauf aktualisiert die Daten; bei einer Wiederholung müssen auch Messwerttabellen und Interpretation dieses Texts an den neuen Lauf angepasst werden.
+
+KI-Unterstützung: Codeprüfung, Überarbeitung, Simulation und Formulierung wurden mit Codex unterstützt. Die Vorschläge wurden durch tatsächliche MATLAB-Ausführung, bekannte Life-Muster, exakte Teilchenzahlerhaltung und den Vergleich der MSD mit den analytischen Schrittvarianzen geprüft.
 
 Quelle für die Aufgaben: lokales Blatt `Diffusion1.pdf`. Externe Quelle zur gewählten Life-Struktur: [LifeWiki, Glider](https://conwaylife.com/wiki/Glider). Die Gleichungen und Vergleiche wurden aus den bereitgestellten Update-Regeln und den oben angegebenen Schrittverteilungen hergeleitet.

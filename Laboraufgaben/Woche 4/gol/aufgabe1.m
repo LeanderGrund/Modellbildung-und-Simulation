@@ -47,11 +47,15 @@ title(layout,'Aufgabe 1: Game of Life, periodisches 100 x 100 Feld');
 exportgraphics(f,fullfile(out,'aufgabe1_zustaende.png'),'Resolution',160); close(f);
 
 f = figure('Visible','off','Theme','light','Position',[50 50 1100 750]);
-tiledlayout(2,1);
-nexttile; plot(0:steps,population,'LineWidth',1); grid on;
-xlabel('Zeitschritt'); ylabel('Lebende Zellen'); legend(names,'Location','best');
+tiledlayout(3,1);
+nexttile; plot(0:steps,population(:,1),'LineWidth',1); grid on;
+xlabel('Zeitschritt'); ylabel('Lebende Zellen'); title('Zufällige Startkonfiguration');
+ax = nexttile; palette = lines(5); colororder(ax,palette(2:5,:));
+plot(0:steps,population(:,2:5),'LineWidth',1); grid on;
+xlabel('Zeitschritt'); ylabel('Lebende Zellen'); legend(names(2:5),'Location','best');
 nexttile; plot(0:steps,changed,'LineWidth',1); grid on;
-xlabel('Zeitschritt'); ylabel('Geaenderte Zellen pro Schritt');
+legend(names,'Location','best');
+xlabel('Zeitschritt'); ylabel('Geänderte Zellen pro Schritt');
 exportgraphics(f,fullfile(out,'aufgabe1_verlauf.png'),'Resolution',160); close(f);
 
 % Show the four glider phases at a readable scale, without a large empty field.
@@ -71,16 +75,18 @@ data = table((0:steps)',population(:,1),population(:,2),population(:,3), ...
 writetable(data,fullfile(out,'aufgabe1_population.csv'));
 result = struct('seed',2101:2105,'size',siz,'times',times, ...
     'firstGliderDeath',firstNoise(3),'finalPopulation',population(end,:), ...
+    'firstEmptyGlider',find(population(:,3)==0,1)-1, ...
+    'birthRangeLast500',[min(population(end-499:end,4)),max(population(end-499:end,4))], ...
     'meanLast500',mean(population(end-499:end,:),1), ...
     'finalChanged',changed(end,:));
 write_json(fullfile(out,'aufgabe1_summary.json'),result);
-fprintf('Aufgabe 1: erstes zusaetzliches Sterben bei t=%g.\n',firstNoise(3));
+fprintf('Aufgabe 1: erstes zusätzliches Sterben bei t=%g.\n',firstNoise(3));
 disp(data([1 11 101 1001 2001],:));
 end
 
 function write_json(file,value)
 fid = fopen(file,'w','n','UTF-8');
-assert(fid >= 0,'Datei konnte nicht geoeffnet werden.');
+assert(fid >= 0,'Datei konnte nicht geöffnet werden.');
 cleanup = onCleanup(@() fclose(fid)); %#ok<NASGU>
 fprintf(fid,'%s',jsonencode(value,PrettyPrint=true));
 end

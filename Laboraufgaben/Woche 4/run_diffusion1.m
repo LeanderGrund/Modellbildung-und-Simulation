@@ -6,7 +6,13 @@ old = pwd;
 cleanup = onCleanup(@() cd(old)); %#ok<NASGU>
 out = fullfile(root,'ergebnisse');
 if ~isfolder(out), mkdir(out); end
+results.metadata = struct('matlab',version,'computer',computer, ...
+    'executedAt',char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')));
 results.tests = pruefe_diffusion1();
+fid = fopen(fullfile(out,'pruefbericht.json'),'w','n','UTF-8');
+assert(fid >= 0,'Prüfbericht konnte nicht geöffnet werden.');
+fprintf(fid,'%s',jsonencode(struct('metadata',results.metadata,'tests',results.tests),PrettyPrint=true));
+fclose(fid);
 cd(fullfile(root,'gol'));
 clear myInit myUpdate myDrawnow
 results.gameOfLife = aufgabe1(out);

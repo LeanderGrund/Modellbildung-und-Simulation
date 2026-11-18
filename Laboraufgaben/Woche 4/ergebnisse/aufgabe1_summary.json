@@ -25,6 +25,11 @@
     7,
     8
   ],
+  "firstEmptyGlider": 483,
+  "birthRangeLast500": [
+    1,
+    21
+  ],
   "meanLast500": [
     273,
     5,

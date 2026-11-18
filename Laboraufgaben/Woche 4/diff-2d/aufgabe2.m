@@ -38,7 +38,7 @@ end
 
 function result = runtime_experiment(out)
 % Median of five repetitions, initialisation and plotting excluded.
-sides = [50 100 200 400]; nsteps = [10 30 100 300 1000]; repeats = 5;
+sides = [50 100 200 400 800]; nsteps = [10 30 100 300 1000]; repeats = 5;
 sizeSeconds = zeros(numel(sides),repeats);
 stepSeconds = zeros(numel(nsteps),repeats);
 [warm,p] = myInit([50 50],cg=10); myUpdate(warm,p,10); % JIT warm-up
@@ -77,6 +77,7 @@ title(sprintf('200 x 200 Orte, Exponent %.3f',fitSteps(1)));
 exportgraphics(f,fullfile(out,'aufgabe2_laufzeit.png'),'Resolution',160); close(f);
 result = struct('matlab',version,'computer',computer,'repetitions',repeats, ...
     'cellExponent',fitCells(1),'stepExponent',fitSteps(1), ...
+    'sizeSeconds',sizeSeconds,'stepSeconds',stepSeconds, ...
     'sizeMeasurements',sizeTable,'stepMeasurements',stepTable);
 fprintf('Laufzeitexponenten: Zellen %.3f, Schritte %.3f\n',fitCells(1),fitSteps(1));
 disp(sizeTable); disp(stepTable);
@@ -129,9 +130,13 @@ assert(all(abs(relativeError) < .04),'MSD weicht um mehr als 4 Prozent ab.');
 f = figure('Visible','off','Theme','light','Position',[50 50 1100 850]); tiledlayout(2,2);
 for model = 1:4
     nexttile; xy = trajectories(1:sampleEvery:end,:,model);
-    plot(xy(:,1),xy(:,2),'.-','MarkerSize',6); hold on;
-    plot(xy(1,1),xy(1,2),'go','MarkerFaceColor','g');
-    plot(xy(end,1),xy(end,2),'ro','MarkerFaceColor','r');
+    % Getrennte Segmente vermeiden Spitzen an scharfen Linienknicken im Export.
+    sx = [xy(1:end-1,1),xy(2:end,1),NaN(size(xy,1)-1,1)]';
+    sy = [xy(1:end-1,2),xy(2:end,2),NaN(size(xy,1)-1,1)]';
+    plot(sx(:),sy(:),'-','Color',[0 .447 .741]); hold on;
+    scatter(xy(:,1),xy(:,2),10,[0 .447 .741],'filled');
+    scatter(xy(1,1),xy(1,2),45,'g','filled');
+    scatter(xy(end,1),xy(end,2),45,'r','filled');
     axis equal; grid on; xlim([-65 65]); ylim([-65 65]);
     xlabel('x'); ylabel('y'); title(labels(model));
 end
@@ -146,7 +151,7 @@ for model = 1:4
         title(sprintf('%s, t=%d',labels(model),times(j)),'FontSize',8);
     end
 end
-sgtitle('Endpunktwolken: gleiche Laengen- und Zeitskalen, 2000 von 20000 Wegen');
+sgtitle('Endpunktwolken: gleiche Längen- und Zeitskalen, 2000 von 20000 Wegen');
 exportgraphics(f,fullfile(out,'aufgabe2_random_walk_wolken.png'),'Resolution',160); close(f);
 f = figure('Visible','off','Theme','light','Position',[50 50 1100 450]); tiledlayout(1,2);
 colors = lines(4);
