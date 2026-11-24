@@ -1,10 +1,10 @@
 function result = demo_random_walk(options)
 % DEMO_RANDOM_WALK Ein Modell aus 2d mit unbeschraenkten Koordinaten testen.
 arguments
-    options.model (1,1) string {mustBeMember(options.model,["i","ii","iii","iv"])} = "i"
+    options.model (1,1) string {mustBeMember(options.model,["i","ii","iii","iv"])} = "iii"
     options.steps (1,1) double {mustBeInteger,mustBePositive,mustBeFinite} = 1000
     options.ensemble (1,1) double {mustBeInteger,mustBePositive,mustBeFinite} = 20000
-    options.sampleEvery (1,1) double {mustBeInteger,mustBePositive,mustBeFinite} = 10
+    options.sampleEvery (1,1) double {mustBeInteger,mustBePositive,mustBeFinite} = 2
     options.seed (1,:) double {mustBeInteger,mustBeNonnegative,mustBeFinite} = []
     options.tolerance (1,1) double {mustBePositive,mustBeFinite} = .04
     options.plot (1,1) logical = true

@@ -10,7 +10,7 @@ function result = demo_aufgabe1(teil,options)
 % Ohne Grafik: r = demo_aufgabe1("c",plot=false);
 % r.history enthaelt alle Zellzahlen, einschliesslich des Startzustands.
 arguments
-    teil (1,1) string {mustBeMember(teil,["a","b","c","d","d_beide"])} = "a"
+    teil (1,1) string {mustBeMember(teil,["a","b","c","d","d_beide"])} = "d_beide"
     options.steps (1,1) double {mustBeInteger,mustBeNonnegative,mustBeFinite} = 2000
     options.siz (1,2) double {mustBeInteger,mustBePositive,mustBeFinite} = [100 100]
     options.fps (1,1) double {mustBePositive,mustBeFinite} = 30
